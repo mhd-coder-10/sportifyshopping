@@ -31,7 +31,13 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header cartCount={cartCount} onCartClick={() => setIsCartOpen(true)} />
+      <Header 
+        cartCount={cartCount} 
+        onCartClick={() => setIsCartOpen(true)} 
+        categories={categories}
+        selectedCategory={selectedCategory}
+        onCategoryClick={setSelectedCategory}
+      />
       
       <Hero />
 
