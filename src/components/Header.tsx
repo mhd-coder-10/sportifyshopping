@@ -1,5 +1,6 @@
-import { ShoppingCart, Search, Menu } from "lucide-react";
+import { ShoppingCart, Search, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useState } from "react";
 
 interface Category {
@@ -13,14 +14,24 @@ interface HeaderProps {
   categories?: Category[];
   selectedCategory?: string;
   onCategoryClick?: (slug: string | undefined) => void;
+  searchQuery?: string;
+  onSearchChange?: (query: string) => void;
 }
 
-const Header = ({ cartCount, onCartClick, categories, selectedCategory, onCategoryClick }: HeaderProps) => {
+const Header = ({ cartCount, onCartClick, categories, selectedCategory, onCategoryClick, searchQuery, onSearchChange }: HeaderProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   const handleCategoryClick = (slug: string | undefined) => {
     onCategoryClick?.(slug);
     setIsMenuOpen(false);
+  };
+
+  const handleSearchToggle = () => {
+    if (isSearchOpen) {
+      onSearchChange?.('');
+    }
+    setIsSearchOpen(!isSearchOpen);
   };
 
   return (
@@ -61,8 +72,20 @@ const Header = ({ cartCount, onCartClick, categories, selectedCategory, onCatego
 
           {/* Actions */}
           <div className="flex items-center gap-2 md:gap-4">
-            <Button variant="ghost" size="icon" className="hidden md:flex">
-              <Search className="h-5 w-5" />
+            {isSearchOpen && (
+              <div className="hidden md:flex items-center gap-2">
+                <Input
+                  type="text"
+                  placeholder="Search products..."
+                  value={searchQuery || ''}
+                  onChange={(e) => onSearchChange?.(e.target.value)}
+                  className="w-64"
+                  autoFocus
+                />
+              </div>
+            )}
+            <Button variant="ghost" size="icon" className="hidden md:flex" onClick={handleSearchToggle}>
+              {isSearchOpen ? <X className="h-5 w-5" /> : <Search className="h-5 w-5" />}
             </Button>
             <Button variant="ghost" size="icon" className="relative" onClick={onCartClick}>
               <ShoppingCart className="h-5 w-5" />
@@ -82,6 +105,13 @@ const Header = ({ cartCount, onCartClick, categories, selectedCategory, onCatego
         {isMenuOpen && (
           <nav className="md:hidden py-4 border-t border-border">
             <div className="flex flex-col gap-4">
+              <Input
+                type="text"
+                placeholder="Search products..."
+                value={searchQuery || ''}
+                onChange={(e) => onSearchChange?.(e.target.value)}
+                className="w-full"
+              />
               {categories?.map((category) => (
                 <button
                   key={category.slug}
