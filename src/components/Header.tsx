@@ -2,13 +2,26 @@ import { ShoppingCart, Search, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 
+interface Category {
+  name: string;
+  slug: string;
+}
+
 interface HeaderProps {
   cartCount: number;
   onCartClick: () => void;
+  categories?: Category[];
+  selectedCategory?: string;
+  onCategoryClick?: (slug: string | undefined) => void;
 }
 
-const Header = ({ cartCount, onCartClick }: HeaderProps) => {
+const Header = ({ cartCount, onCartClick, categories, selectedCategory, onCategoryClick }: HeaderProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const handleCategoryClick = (slug: string | undefined) => {
+    onCategoryClick?.(slug);
+    setIsMenuOpen(false);
+  };
 
   return (
     <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-md border-b border-border">
@@ -16,20 +29,34 @@ const Header = ({ cartCount, onCartClick }: HeaderProps) => {
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
           <div className="flex items-center gap-2">
-            <div className="w-10 h-10 bg-gradient-accent rounded-lg flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-xl" style={{ fontFamily: 'var(--font-display)' }}>S</span>
-            </div>
-            <span className="text-2xl md:text-3xl tracking-wider" style={{ fontFamily: 'var(--font-display)' }}>
-              SPORTIFY
-            </span>
+            <button 
+              onClick={() => handleCategoryClick(undefined)}
+              className="flex items-center gap-2"
+            >
+              <div className="w-10 h-10 bg-gradient-accent rounded-lg flex items-center justify-center">
+                <span className="text-primary-foreground font-bold text-xl" style={{ fontFamily: 'var(--font-display)' }}>S</span>
+              </div>
+              <span className="text-2xl md:text-3xl tracking-wider" style={{ fontFamily: 'var(--font-display)' }}>
+                SPORTIFY
+              </span>
+            </button>
           </div>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-8">
-            <a href="#" className="text-sm font-medium hover:text-primary transition-colors">NEW ARRIVALS</a>
-            <a href="#" className="text-sm font-medium hover:text-primary transition-colors">MEN</a>
-            <a href="#" className="text-sm font-medium hover:text-primary transition-colors">WOMEN</a>
-            <a href="#" className="text-sm font-medium hover:text-primary transition-colors">SALE</a>
+            {categories?.map((category) => (
+              <button
+                key={category.slug}
+                onClick={() => handleCategoryClick(category.slug)}
+                className={`text-sm font-medium transition-colors ${
+                  selectedCategory === category.slug 
+                    ? 'text-primary' 
+                    : 'text-foreground hover:text-primary'
+                }`}
+              >
+                {category.name.toUpperCase()}
+              </button>
+            ))}
           </nav>
 
           {/* Actions */}
@@ -55,10 +82,19 @@ const Header = ({ cartCount, onCartClick }: HeaderProps) => {
         {isMenuOpen && (
           <nav className="md:hidden py-4 border-t border-border">
             <div className="flex flex-col gap-4">
-              <a href="#" className="text-sm font-medium hover:text-primary transition-colors">NEW ARRIVALS</a>
-              <a href="#" className="text-sm font-medium hover:text-primary transition-colors">MEN</a>
-              <a href="#" className="text-sm font-medium hover:text-primary transition-colors">WOMEN</a>
-              <a href="#" className="text-sm font-medium hover:text-primary transition-colors">SALE</a>
+              {categories?.map((category) => (
+                <button
+                  key={category.slug}
+                  onClick={() => handleCategoryClick(category.slug)}
+                  className={`text-sm font-medium text-left transition-colors ${
+                    selectedCategory === category.slug 
+                      ? 'text-primary' 
+                      : 'text-foreground hover:text-primary'
+                  }`}
+                >
+                  {category.name.toUpperCase()}
+                </button>
+              ))}
             </div>
           </nav>
         )}
