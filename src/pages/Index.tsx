@@ -11,10 +11,17 @@ import { Skeleton } from "@/components/ui/skeleton";
 const Index = () => {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string | undefined>();
+  const [searchQuery, setSearchQuery] = useState('');
   
   const { data: categories, isLoading: categoriesLoading } = useCategories();
   const { data: featuredProducts, isLoading: featuredLoading } = useFeaturedProducts();
   const { data: products, isLoading: productsLoading } = useProducts(selectedCategory);
+
+  // Filter products based on search query
+  const filteredProducts = products?.filter((product) =>
+    product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    product.description?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
   
   const { cartItems, addToCart, updateQuantity, removeFromCart, cartCount } = useCart();
 
@@ -37,6 +44,8 @@ const Index = () => {
         categories={categories}
         selectedCategory={selectedCategory}
         onCategoryClick={setSelectedCategory}
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
       />
       
       <Hero />
@@ -115,7 +124,12 @@ const Index = () => {
               ? Array.from({ length: 8 }).map((_, i) => (
                   <Skeleton key={i} className="aspect-[3/4] rounded-2xl" />
                 ))
-              : products?.map((product) => (
+              : filteredProducts?.length === 0 ? (
+                  <div className="col-span-full text-center py-12">
+                    <p className="text-muted-foreground text-lg">No products found matching "{searchQuery}"</p>
+                  </div>
+                )
+              : filteredProducts?.map((product) => (
                   <ProductCard
                     key={product.id}
                     id={product.id}
