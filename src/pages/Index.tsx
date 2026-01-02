@@ -104,7 +104,7 @@ const Index = () => {
       )}
 
       {/* All Products Section */}
-      <section className="py-12 md:py-20">
+      <section id="all-products" className="py-12 md:py-20">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between mb-8 md:mb-12">
             <h2 className="text-3xl md:text-5xl text-foreground tracking-wide" style={{ fontFamily: 'var(--font-display)' }}>
@@ -156,25 +156,25 @@ const Index = () => {
             <div>
               <h4 className="font-semibold mb-4">SHOP</h4>
               <ul className="space-y-2 text-sm text-background/70">
-                <li><a href="#" className="hover:text-background">New Arrivals</a></li>
-                <li><a href="#" className="hover:text-background">Best Sellers</a></li>
-                <li><a href="#" className="hover:text-background">Sale</a></li>
+                <li><a href="/new-arrivals" className="hover:text-background">New Arrivals</a></li>
+                <li><a href="/best-sellers" className="hover:text-background">Best Sellers</a></li>
+                <li><a href="/sale" className="hover:text-background">Sale</a></li>
               </ul>
             </div>
             <div>
               <h4 className="font-semibold mb-4">SUPPORT</h4>
               <ul className="space-y-2 text-sm text-background/70">
-                <li><a href="#" className="hover:text-background">Contact Us</a></li>
-                <li><a href="#" className="hover:text-background">FAQs</a></li>
-                <li><a href="#" className="hover:text-background">Shipping</a></li>
+                <li><a href="/contact" className="hover:text-background">Contact Us</a></li>
+                <li><a href="/faqs" className="hover:text-background">FAQs</a></li>
+                <li><a href="/shipping" className="hover:text-background">Shipping</a></li>
               </ul>
             </div>
             <div>
               <h4 className="font-semibold mb-4">FOLLOW US</h4>
               <ul className="space-y-2 text-sm text-background/70">
-                <li><a href="#" className="hover:text-background">Instagram</a></li>
-                <li><a href="#" className="hover:text-background">Twitter</a></li>
-                <li><a href="#" className="hover:text-background">Facebook</a></li>
+                <li><a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:text-background">Instagram</a></li>
+                <li><a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="hover:text-background">Twitter</a></li>
+                <li><a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="hover:text-background">Facebook</a></li>
               </ul>
             </div>
           </div>
