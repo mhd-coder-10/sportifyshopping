@@ -1,7 +1,14 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const Hero = () => {
+  const navigate = useNavigate();
+
+  const scrollToProducts = () => {
+    document.getElementById("all-products")?.scrollIntoView({ behavior: "smooth" });
+  };
+
   return (
     <section className="relative min-h-[70vh] md:min-h-[80vh] bg-gradient-hero overflow-hidden">
       {/* Background Pattern */}
@@ -25,11 +32,20 @@ const Hero = () => {
               Discover premium sports gear designed to elevate your performance and style.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-              <Button size="lg" className="bg-gradient-accent text-white border-0 text-lg px-8 py-6 hover:opacity-90 transition-opacity">
+              <Button 
+                size="lg" 
+                className="bg-gradient-accent text-white border-0 text-lg px-8 py-6 hover:opacity-90 transition-opacity"
+                onClick={() => navigate("/new-arrivals")}
+              >
                 SHOP NOW
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
-              <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10 text-lg px-8 py-6">
+              <Button 
+                size="lg" 
+                variant="outline" 
+                className="border-white/30 text-white hover:bg-white/10 text-lg px-8 py-6"
+                onClick={scrollToProducts}
+              >
                 VIEW CATALOG
               </Button>
             </div>

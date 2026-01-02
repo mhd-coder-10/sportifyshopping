@@ -73,13 +73,14 @@ const Header = ({ cartCount, onCartClick, categories, selectedCategory, onCatego
           {/* Actions */}
           <div className="flex items-center gap-2 md:gap-4">
             {isSearchOpen && (
-              <div className="hidden md:flex items-center gap-2">
+              <div className="hidden md:flex items-center gap-2 relative">
+                <Search className="absolute left-3 h-4 w-4 text-muted-foreground" />
                 <Input
                   type="text"
                   placeholder="Search products..."
                   value={searchQuery || ''}
                   onChange={(e) => onSearchChange?.(e.target.value)}
-                  className="w-64"
+                  className="w-64 pl-9"
                   autoFocus
                 />
               </div>
@@ -105,13 +106,16 @@ const Header = ({ cartCount, onCartClick, categories, selectedCategory, onCatego
         {isMenuOpen && (
           <nav className="md:hidden py-4 border-t border-border">
             <div className="flex flex-col gap-4">
-              <Input
-                type="text"
-                placeholder="Search products..."
-                value={searchQuery || ''}
-                onChange={(e) => onSearchChange?.(e.target.value)}
-                className="w-full"
-              />
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  type="text"
+                  placeholder="Search products..."
+                  value={searchQuery || ''}
+                  onChange={(e) => onSearchChange?.(e.target.value)}
+                  className="w-full pl-9"
+                />
+              </div>
               {categories?.map((category) => (
                 <button
                   key={category.slug}

@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ShoppingCart } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface ProductCardProps {
   id: string;
@@ -12,10 +13,23 @@ interface ProductCardProps {
 }
 
 const ProductCard = ({ id, name, description, price, originalPrice, imageUrl, onAddToCart }: ProductCardProps) => {
+  const navigate = useNavigate();
   const discount = originalPrice ? Math.round(((originalPrice - price) / originalPrice) * 100) : null;
 
+  const handleClick = () => {
+    navigate(`/product/${id}`);
+  };
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onAddToCart(id);
+  };
+
   return (
-    <div className="group bg-card rounded-2xl overflow-hidden shadow-product hover:shadow-hover transition-all duration-300">
+    <div 
+      onClick={handleClick}
+      className="group bg-card rounded-2xl overflow-hidden shadow-product hover:shadow-hover transition-all duration-300 cursor-pointer"
+    >
       {/* Image */}
       <div className="relative aspect-square bg-secondary overflow-hidden">
         {imageUrl && (
@@ -31,7 +45,7 @@ const ProductCard = ({ id, name, description, price, originalPrice, imageUrl, on
           </span>
         )}
         <Button
-          onClick={() => onAddToCart(id)}
+          onClick={handleAddToCart}
           size="icon"
           className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity bg-gradient-accent border-0 hover:opacity-90"
         >
