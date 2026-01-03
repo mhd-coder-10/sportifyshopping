@@ -4,8 +4,11 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
 import CartDrawer from "@/components/CartDrawer";
+import ReviewSection from "@/components/ReviewSection";
 import { useCart } from "@/hooks/useCart";
 import { useCategories } from "@/hooks/useProducts";
+import { useAuth } from "@/contexts/AuthContext";
+import { useCurrency } from "@/contexts/CurrencyContext";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ShoppingCart, Heart, Share2, Truck, Shield, RotateCcw, Star, Minus, Plus, ChevronLeft } from "lucide-react";
@@ -29,6 +32,8 @@ const ProductDetail = () => {
   const [quantity, setQuantity] = useState(1);
   const [isWishlisted, setIsWishlisted] = useState(false);
 
+  const { user } = useAuth();
+  const { formatPrice } = useCurrency();
   const { data: categories } = useCategories();
   const { cartItems, addToCart, updateQuantity, removeFromCart, cartCount } = useCart();
 
@@ -63,7 +68,7 @@ const ProductDetail = () => {
           category_id: product.category_id,
           stock_quantity: product.stock_quantity,
           is_featured: product.is_featured,
-        });
+        }, selectedSize, selectedColor.name);
       }
       toast.success(`Added ${quantity} item(s) to cart`);
     }
@@ -74,8 +79,15 @@ const ProductDetail = () => {
       toast.error("Please select a size");
       return;
     }
+    
+    if (!user) {
+      toast.error("Please login to proceed with purchase");
+      navigate('/auth');
+      return;
+    }
+
     handleAddToCart();
-    setIsCartOpen(true);
+    navigate('/checkout');
   };
 
   const discount = product?.original_price 
@@ -174,14 +186,14 @@ const ProductDetail = () => {
             {/* Price */}
             <div className="flex items-baseline gap-3">
               <span className="text-4xl font-bold text-foreground" style={{ fontFamily: 'var(--font-display)' }}>
-                ${Number(product.price).toFixed(2)}
+                {formatPrice(Number(product.price))}
               </span>
               {product.original_price && (
                 <>
                   <span className="text-xl text-muted-foreground line-through">
-                    ${Number(product.original_price).toFixed(2)}
+                    {formatPrice(Number(product.original_price))}
                   </span>
-                  <span className="text-green-600 font-semibold">Save ${(Number(product.original_price) - Number(product.price)).toFixed(2)}</span>
+                  <span className="text-green-600 font-semibold">Save {formatPrice(Number(product.original_price) - Number(product.price))}</span>
                 </>
               )}
             </div>
@@ -295,7 +307,7 @@ const ProductDetail = () => {
                 <Truck className="h-6 w-6 text-primary" />
                 <div>
                   <p className="font-medium text-foreground">Free Shipping</p>
-                  <p className="text-sm text-muted-foreground">Orders over $100</p>
+                  <p className="text-sm text-muted-foreground">Orders over ₹2000</p>
                 </div>
               </div>
               <div className="flex items-center gap-3 p-4 bg-secondary/50 rounded-xl">
@@ -315,6 +327,9 @@ const ProductDetail = () => {
             </div>
           </div>
         </div>
+
+        {/* Reviews Section */}
+        <ReviewSection productId={product.id} />
       </div>
 
       <CartDrawer
