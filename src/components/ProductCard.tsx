@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ShoppingCart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useCurrency } from "@/contexts/CurrencyContext";
 
 interface ProductCardProps {
   id: string;
@@ -14,6 +15,7 @@ interface ProductCardProps {
 
 const ProductCard = ({ id, name, description, price, originalPrice, imageUrl, onAddToCart }: ProductCardProps) => {
   const navigate = useNavigate();
+  const { formatPrice } = useCurrency();
   const discount = originalPrice ? Math.round(((originalPrice - price) / originalPrice) * 100) : null;
 
   const handleClick = () => {
@@ -59,11 +61,11 @@ const ProductCard = ({ id, name, description, price, originalPrice, imageUrl, on
         <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{description}</p>
         <div className="flex items-center gap-2">
           <span className="text-xl font-bold text-foreground" style={{ fontFamily: 'var(--font-display)' }}>
-            ${price.toFixed(2)}
+            {formatPrice(price)}
           </span>
           {originalPrice && (
             <span className="text-sm text-muted-foreground line-through">
-              ${originalPrice.toFixed(2)}
+              {formatPrice(originalPrice)}
             </span>
           )}
         </div>

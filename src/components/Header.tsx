@@ -1,7 +1,17 @@
-import { ShoppingCart, Search, Menu, X } from "lucide-react";
+import { ShoppingCart, Search, Menu, X, User, LogOut, Package } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import CurrencySelector from "./CurrencySelector";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface Category {
   name: string;
@@ -21,6 +31,8 @@ interface HeaderProps {
 const Header = ({ cartCount, onCartClick, categories, selectedCategory, onCategoryClick, searchQuery, onSearchChange }: HeaderProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const navigate = useNavigate();
+  const { user, signOut, profile } = useAuth();
 
   const handleCategoryClick = (slug: string | undefined) => {
     onCategoryClick?.(slug);
@@ -34,6 +46,11 @@ const Header = ({ cartCount, onCartClick, categories, selectedCategory, onCatego
     setIsSearchOpen(!isSearchOpen);
   };
 
+  const handleLogoClick = () => {
+    handleCategoryClick(undefined);
+    navigate('/');
+  };
+
   return (
     <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-md border-b border-border">
       <div className="container mx-auto px-4">
@@ -41,7 +58,7 @@ const Header = ({ cartCount, onCartClick, categories, selectedCategory, onCatego
           {/* Logo */}
           <div className="flex items-center gap-2">
             <button 
-              onClick={() => handleCategoryClick(undefined)}
+              onClick={handleLogoClick}
               className="flex items-center gap-2"
             >
               <div className="w-10 h-10 bg-gradient-accent rounded-lg flex items-center justify-center">
@@ -71,7 +88,12 @@ const Header = ({ cartCount, onCartClick, categories, selectedCategory, onCatego
           </nav>
 
           {/* Actions */}
-          <div className="flex items-center gap-2 md:gap-4">
+          <div className="flex items-center gap-2 md:gap-3">
+            {/* Currency Selector - Desktop */}
+            <div className="hidden md:block">
+              <CurrencySelector />
+            </div>
+
             {isSearchOpen && (
               <div className="hidden md:flex items-center gap-2 relative">
                 <Search className="absolute left-3 h-4 w-4 text-muted-foreground" />
@@ -88,6 +110,38 @@ const Header = ({ cartCount, onCartClick, categories, selectedCategory, onCatego
             <Button variant="ghost" size="icon" className="hidden md:flex" onClick={handleSearchToggle}>
               {isSearchOpen ? <X className="h-5 w-5" /> : <Search className="h-5 w-5" />}
             </Button>
+
+            {/* User Menu */}
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="relative">
+                    <User className="h-5 w-5" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <div className="px-2 py-1.5">
+                    <p className="text-sm font-medium">{profile?.full_name || 'User'}</p>
+                    <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+                  </div>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => navigate('/orders')}>
+                    <Package className="h-4 w-4 mr-2" />
+                    My Orders
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={signOut} className="text-destructive">
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Sign Out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Button variant="ghost" size="sm" onClick={() => navigate('/auth')} className="hidden md:flex">
+                Sign In
+              </Button>
+            )}
+
             <Button variant="ghost" size="icon" className="relative" onClick={onCartClick}>
               <ShoppingCart className="h-5 w-5" />
               {cartCount > 0 && (
@@ -106,6 +160,20 @@ const Header = ({ cartCount, onCartClick, categories, selectedCategory, onCatego
         {isMenuOpen && (
           <nav className="md:hidden py-4 border-t border-border">
             <div className="flex flex-col gap-4">
+              <div className="flex items-center gap-2">
+                <CurrencySelector />
+                {!user && (
+                  <Button variant="outline" size="sm" onClick={() => navigate('/auth')} className="flex-1">
+                    Sign In
+                  </Button>
+                )}
+                {user && (
+                  <Button variant="outline" size="sm" onClick={() => navigate('/orders')} className="flex-1">
+                    <Package className="h-4 w-4 mr-2" />
+                    My Orders
+                  </Button>
+                )}
+              </div>
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
@@ -129,6 +197,12 @@ const Header = ({ cartCount, onCartClick, categories, selectedCategory, onCatego
                   {category.name.toUpperCase()}
                 </button>
               ))}
+              {user && (
+                <Button variant="ghost" onClick={signOut} className="justify-start text-destructive">
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Sign Out
+                </Button>
+              )}
             </div>
           </nav>
         )}

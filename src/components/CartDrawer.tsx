@@ -1,14 +1,9 @@
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Minus, Plus, Trash2, ShoppingBag } from "lucide-react";
-
-export interface CartItem {
-  id: string;
-  name: string;
-  price: number;
-  imageUrl: string | null;
-  quantity: number;
-}
+import { useNavigate } from "react-router-dom";
+import { useCurrency } from "@/contexts/CurrencyContext";
+import type { CartItem } from "@/hooks/useCart";
 
 interface CartDrawerProps {
   isOpen: boolean;
@@ -19,7 +14,14 @@ interface CartDrawerProps {
 }
 
 const CartDrawer = ({ isOpen, onClose, items, onUpdateQuantity, onRemove }: CartDrawerProps) => {
+  const navigate = useNavigate();
+  const { formatPrice } = useCurrency();
   const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+  const handleCheckout = () => {
+    onClose();
+    navigate('/checkout');
+  };
 
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
@@ -42,8 +44,8 @@ const CartDrawer = ({ isOpen, onClose, items, onUpdateQuantity, onRemove }: Cart
         ) : (
           <>
             <div className="flex-1 overflow-auto py-4 space-y-4">
-              {items.map((item) => (
-                <div key={item.id} className="flex gap-4 bg-secondary/50 rounded-xl p-3">
+              {items.map((item, index) => (
+                <div key={`${item.id}-${index}`} className="flex gap-4 bg-secondary/50 rounded-xl p-3">
                   <div className="w-20 h-20 rounded-lg overflow-hidden bg-secondary flex-shrink-0">
                     {item.imageUrl && (
                       <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
@@ -51,8 +53,10 @@ const CartDrawer = ({ isOpen, onClose, items, onUpdateQuantity, onRemove }: Cart
                   </div>
                   <div className="flex-1 min-w-0">
                     <h4 className="font-medium text-foreground line-clamp-1">{item.name}</h4>
+                    {item.size && <p className="text-xs text-muted-foreground">Size: {item.size}</p>}
+                    {item.color && <p className="text-xs text-muted-foreground">Color: {item.color}</p>}
                     <p className="text-lg font-bold text-foreground" style={{ fontFamily: 'var(--font-display)' }}>
-                      ${item.price.toFixed(2)}
+                      {formatPrice(item.price)}
                     </p>
                     <div className="flex items-center gap-2 mt-2">
                       <Button
@@ -90,10 +94,13 @@ const CartDrawer = ({ isOpen, onClose, items, onUpdateQuantity, onRemove }: Cart
               <div className="flex justify-between items-center">
                 <span className="text-lg text-muted-foreground">Total</span>
                 <span className="text-2xl font-bold text-foreground" style={{ fontFamily: 'var(--font-display)' }}>
-                  ${total.toFixed(2)}
+                  {formatPrice(total)}
                 </span>
               </div>
-              <Button className="w-full bg-gradient-accent text-white border-0 hover:opacity-90 py-6 text-lg">
+              <Button 
+                onClick={handleCheckout}
+                className="w-full bg-gradient-accent text-white border-0 hover:opacity-90 py-6 text-lg"
+              >
                 CHECKOUT
               </Button>
             </div>
