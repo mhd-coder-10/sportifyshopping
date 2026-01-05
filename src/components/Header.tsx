@@ -34,7 +34,12 @@ const Header = ({ cartCount, onCartClick, categories, selectedCategory, onCatego
   const navigate = useNavigate();
   const { user, signOut, profile } = useAuth();
 
+  // Filter out cricket-field category from display
+  const displayCategories = categories?.filter(cat => cat.slug !== 'cricket-field');
+
   const handleCategoryClick = (slug: string | undefined) => {
+    // Always navigate to home page first, then apply category filter
+    navigate('/');
     onCategoryClick?.(slug);
     setIsMenuOpen(false);
   };
@@ -72,7 +77,7 @@ const Header = ({ cartCount, onCartClick, categories, selectedCategory, onCatego
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-8">
-            {categories?.map((category) => (
+            {displayCategories?.map((category) => (
               <button
                 key={category.slug}
                 onClick={() => handleCategoryClick(category.slug)}
@@ -184,7 +189,7 @@ const Header = ({ cartCount, onCartClick, categories, selectedCategory, onCatego
                   className="w-full pl-9"
                 />
               </div>
-              {categories?.map((category) => (
+              {displayCategories?.map((category) => (
                 <button
                   key={category.slug}
                   onClick={() => handleCategoryClick(category.slug)}

@@ -86,8 +86,10 @@ const ProductDetail = () => {
       return;
     }
 
+    // Add to cart first, then navigate to checkout
     handleAddToCart();
-    navigate('/checkout');
+    toast.success("Product added to cart. Proceeding to checkout...");
+    setTimeout(() => navigate('/checkout'), 500);
   };
 
   const discount = product?.original_price 
