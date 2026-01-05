@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCurrency } from '@/contexts/CurrencyContext';
@@ -10,8 +10,9 @@ import { Skeleton } from '@/components/ui/skeleton';
 import Header from '@/components/Header';
 import { useCategories } from '@/hooks/useProducts';
 import { useCart } from '@/hooks/useCart';
-import { ChevronLeft, Package, Truck, CheckCircle, Clock, MapPin, Phone, Calendar } from 'lucide-react';
+import { ChevronLeft, Package, Truck, CheckCircle, MapPin, Calendar, XCircle } from 'lucide-react';
 import { format } from 'date-fns';
+import { toast } from 'sonner';
 
 const orderStatusSteps = [
   { key: 'confirmed', label: 'Confirmed', icon: CheckCircle },
@@ -24,6 +25,7 @@ const orderStatusSteps = [
 const OrderDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { user } = useAuth();
   const { formatPrice } = useCurrency();
   const { data: categories } = useCategories();
@@ -64,6 +66,27 @@ const OrderDetail = () => {
     },
     enabled: !!id && !!user,
   });
+
+  const cancelOrderMutation = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase
+        .from('orders')
+        .update({ status: 'cancelled' as const })
+        .eq('id', id);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['order', id] });
+      queryClient.invalidateQueries({ queryKey: ['orders'] });
+      toast.success('Order cancelled successfully');
+    },
+    onError: () => {
+      toast.error('Failed to cancel order');
+    },
+  });
+
+  const canCancelOrder = order && !['delivered', 'cancelled', 'out_for_delivery'].includes(order.status);
 
   const getCurrentStepIndex = () => {
     if (!order) return 0;
@@ -275,6 +298,18 @@ const OrderDetail = () => {
                 </div>
               </CardContent>
             </Card>
+
+            {canCancelOrder && (
+              <Button 
+                variant="destructive" 
+                className="w-full" 
+                onClick={() => cancelOrderMutation.mutate()}
+                disabled={cancelOrderMutation.isPending}
+              >
+                <XCircle className="h-4 w-4 mr-2" />
+                {cancelOrderMutation.isPending ? 'Cancelling...' : 'Cancel Order'}
+              </Button>
+            )}
 
             <Button variant="outline" className="w-full" onClick={() => navigate('/')}>
               Continue Shopping
