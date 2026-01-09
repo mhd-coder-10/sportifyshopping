@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
 import { useCategories } from "@/hooks/useProducts";
 import { useCart } from "@/hooks/useCart";
@@ -7,7 +9,7 @@ import CartDrawer from "@/components/CartDrawer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Mail, Phone, MapPin, Clock, Send, ChevronLeft } from "lucide-react";
+import { Mail, Phone, MapPin, Clock, Send, ChevronLeft, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 const Contact = () => {
@@ -18,10 +20,31 @@ const Contact = () => {
   const { data: categories } = useCategories();
   const { cartItems, updateQuantity, removeFromCart, cartCount } = useCart();
 
+  const submitMessageMutation = useMutation({
+    mutationFn: async (data: typeof formData) => {
+      const { error } = await supabase
+        .from('contact_messages')
+        .insert({
+          name: data.name,
+          email: data.email,
+          subject: data.subject || null,
+          message: data.message,
+        });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Message sent successfully! We'll get back to you soon.");
+      setFormData({ name: "", email: "", subject: "", message: "" });
+    },
+    onError: (error) => {
+      toast.error("Failed to send message. Please try again.");
+      console.error('Contact form error:', error);
+    },
+  });
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    toast.success("Message sent successfully! We'll get back to you soon.");
-    setFormData({ name: "", email: "", subject: "", message: "" });
+    submitMessageMutation.mutate(formData);
   };
 
   return (
@@ -87,9 +110,17 @@ const Contact = () => {
                     required
                   />
                 </div>
-                <Button type="submit" className="w-full bg-gradient-accent border-0 hover:opacity-90">
-                  <Send className="h-4 w-4 mr-2" />
-                  Send Message
+                <Button 
+                  type="submit" 
+                  className="w-full bg-gradient-accent border-0 hover:opacity-90"
+                  disabled={submitMessageMutation.isPending}
+                >
+                  {submitMessageMutation.isPending ? (
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  ) : (
+                    <Send className="h-4 w-4 mr-2" />
+                  )}
+                  {submitMessageMutation.isPending ? 'Sending...' : 'Send Message'}
                 </Button>
               </form>
             </div>
