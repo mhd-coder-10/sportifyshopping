@@ -1,9 +1,10 @@
-import { ShoppingCart, Search, Menu, X, User, LogOut, Package } from "lucide-react";
+import { ShoppingCart, Search, Menu, X, User, LogOut, Package, MessageSquare, ClipboardList, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { useAdminAuth } from "@/hooks/useAdminAuth";
 import CurrencySelector from "./CurrencySelector";
 import {
   DropdownMenu,
@@ -33,6 +34,7 @@ const Header = ({ cartCount, onCartClick, categories, selectedCategory, onCatego
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const navigate = useNavigate();
   const { user, signOut, profile } = useAuth();
+  const { isAdmin } = useAdminAuth();
 
   // Filter out cricket-field category from display
   const displayCategories = categories?.filter(cat => cat.slug !== 'cricket-field');
@@ -134,6 +136,23 @@ const Header = ({ cartCount, onCartClick, categories, selectedCategory, onCatego
                     <Package className="h-4 w-4 mr-2" />
                     My Orders
                   </DropdownMenuItem>
+                  {isAdmin && (
+                    <>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={() => navigate('/admin')}>
+                        <Shield className="h-4 w-4 mr-2" />
+                        Admin Dashboard
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => navigate('/admin/orders')}>
+                        <ClipboardList className="h-4 w-4 mr-2" />
+                        Order Management
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => navigate('/admin/messages')}>
+                        <MessageSquare className="h-4 w-4 mr-2" />
+                        Messages
+                      </DropdownMenuItem>
+                    </>
+                  )}
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={signOut} className="text-destructive">
                     <LogOut className="h-4 w-4 mr-2" />
@@ -173,10 +192,18 @@ const Header = ({ cartCount, onCartClick, categories, selectedCategory, onCatego
                   </Button>
                 )}
                 {user && (
-                  <Button variant="outline" size="sm" onClick={() => navigate('/orders')} className="flex-1">
-                    <Package className="h-4 w-4 mr-2" />
-                    My Orders
-                  </Button>
+                  <div className="flex gap-2 flex-1">
+                    <Button variant="outline" size="sm" onClick={() => navigate('/orders')} className="flex-1">
+                      <Package className="h-4 w-4 mr-2" />
+                      My Orders
+                    </Button>
+                    {isAdmin && (
+                      <Button variant="outline" size="sm" onClick={() => navigate('/admin')} className="flex-1">
+                        <Shield className="h-4 w-4 mr-2" />
+                        Admin
+                      </Button>
+                    )}
+                  </div>
                 )}
               </div>
               <div className="relative">
