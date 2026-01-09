@@ -11,7 +11,8 @@ import {
   LogOut, 
   Loader2,
   Store,
-  Shield
+  Shield,
+  MessageSquare
 } from 'lucide-react';
 
 interface AdminLayoutProps {
@@ -52,6 +53,7 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
     { path: '/admin/products', icon: Package, label: 'Products' },
     { path: '/admin/orders', icon: ShoppingCart, label: 'Orders' },
     { path: '/admin/categories', icon: FolderOpen, label: 'Categories' },
+    { path: '/admin/messages', icon: MessageSquare, label: 'Messages' },
   ];
 
   return (
