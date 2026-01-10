@@ -23,6 +23,9 @@ const statusOptions: OrderStatus[] = [
   'cancelled',
 ];
 
+const paymentStatusOptions = ['pending', 'paid', 'failed', 'refunded'] as const;
+type PaymentStatus = typeof paymentStatusOptions[number];
+
 const AdminOrders = () => {
   const queryClient = useQueryClient();
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
@@ -71,6 +74,23 @@ const AdminOrders = () => {
     },
   });
 
+  const updatePaymentStatusMutation = useMutation({
+    mutationFn: async ({ orderId, paymentStatus }: { orderId: string; paymentStatus: PaymentStatus }) => {
+      const { error } = await supabase
+        .from('orders')
+        .update({ payment_status: paymentStatus })
+        .eq('id', orderId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-orders'] });
+      toast.success('Payment status updated!');
+    },
+    onError: (error) => {
+      toast.error('Error updating payment status: ' + error.message);
+    },
+  });
+
   const handleViewOrder = (order: any) => {
     setSelectedOrder(order);
     setIsDetailOpen(true);
@@ -83,6 +103,16 @@ const AdminOrders = () => {
       case 'cancelled': return 'bg-red-500/20 text-red-400';
       case 'shipped': return 'bg-blue-500/20 text-blue-400';
       case 'out_for_delivery': return 'bg-purple-500/20 text-purple-400';
+      default: return 'bg-slate-500/20 text-slate-400';
+    }
+  };
+
+  const getPaymentStatusColor = (status: string | null) => {
+    switch (status) {
+      case 'paid': return 'bg-green-500/20 text-green-400';
+      case 'pending': return 'bg-yellow-500/20 text-yellow-400';
+      case 'failed': return 'bg-red-500/20 text-red-400';
+      case 'refunded': return 'bg-blue-500/20 text-blue-400';
       default: return 'bg-slate-500/20 text-slate-400';
     }
   };
@@ -109,8 +139,9 @@ const AdminOrders = () => {
                     <TableHead className="text-slate-300">Date</TableHead>
                     <TableHead className="text-slate-300">Customer</TableHead>
                     <TableHead className="text-slate-300">Amount</TableHead>
-                    <TableHead className="text-slate-300">Payment</TableHead>
-                    <TableHead className="text-slate-300">Status</TableHead>
+                    <TableHead className="text-slate-300">Payment Method</TableHead>
+                    <TableHead className="text-slate-300">Payment Status</TableHead>
+                    <TableHead className="text-slate-300">Order Status</TableHead>
                     <TableHead className="text-slate-300 text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -137,6 +168,25 @@ const AdminOrders = () => {
                         }`}>
                           {order.payment_method === 'online' ? 'Online' : 'COD'}
                         </span>
+                      </TableCell>
+                      <TableCell>
+                        <Select
+                          value={order.payment_status || 'pending'}
+                          onValueChange={(value: PaymentStatus) => 
+                            updatePaymentStatusMutation.mutate({ orderId: order.id, paymentStatus: value })
+                          }
+                        >
+                          <SelectTrigger className={`w-28 h-8 text-xs ${getPaymentStatusColor(order.payment_status)} border-0`}>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {paymentStatusOptions.map((status) => (
+                              <SelectItem key={status} value={status} className="capitalize">
+                                {status.charAt(0).toUpperCase() + status.slice(1)}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </TableCell>
                       <TableCell>
                         <Select
@@ -189,13 +239,20 @@ const AdminOrders = () => {
                   </div>
                   <div>
                     <h4 className="text-sm text-slate-400 mb-1">Order Details</h4>
-                    <p className="text-white">
-                      Status: <span className={`px-2 py-0.5 rounded text-xs ${getStatusColor(selectedOrder.status)}`}>
-                        {selectedOrder.status}
-                      </span><br />
-                      Payment: {selectedOrder.payment_method}<br />
-                      Total: ₹{Number(selectedOrder.total_amount).toLocaleString()}
-                    </p>
+                    <div className="text-white space-y-1">
+                      <p>
+                        Order Status: <span className={`px-2 py-0.5 rounded text-xs ${getStatusColor(selectedOrder.status)}`}>
+                          {selectedOrder.status}
+                        </span>
+                      </p>
+                      <p>
+                        Payment Status: <span className={`px-2 py-0.5 rounded text-xs ${getPaymentStatusColor(selectedOrder.payment_status)}`}>
+                          {selectedOrder.payment_status || 'pending'}
+                        </span>
+                      </p>
+                      <p>Payment Method: {selectedOrder.payment_method === 'online' ? 'Online' : 'Cash on Delivery'}</p>
+                      <p>Total: ₹{Number(selectedOrder.total_amount).toLocaleString()}</p>
+                    </div>
                   </div>
                 </div>
 
