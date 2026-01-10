@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 import Header from "@/components/Header";
 import { useCategories } from "@/hooks/useProducts";
 import { useCart } from "@/hooks/useCart";
@@ -14,11 +15,23 @@ import { toast } from "sonner";
 
 const Contact = () => {
   const navigate = useNavigate();
+  const { user, profile } = useAuth();
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [formData, setFormData] = useState({ name: "", email: "", subject: "", message: "" });
 
   const { data: categories } = useCategories();
   const { cartItems, updateQuantity, removeFromCart, cartCount } = useCart();
+
+  // Pre-fill form with user data when logged in
+  useEffect(() => {
+    if (user && profile) {
+      setFormData(prev => ({
+        ...prev,
+        name: profile.full_name || prev.name,
+        email: user.email || prev.email,
+      }));
+    }
+  }, [user, profile]);
 
   const submitMessageMutation = useMutation({
     mutationFn: async (data: typeof formData) => {
@@ -29,12 +42,21 @@ const Contact = () => {
           email: data.email,
           subject: data.subject || null,
           message: data.message,
+          user_id: user?.id || null,
         });
       if (error) throw error;
     },
     onSuccess: () => {
       toast.success("Message sent successfully! We'll get back to you soon.");
       setFormData({ name: "", email: "", subject: "", message: "" });
+      if (user) {
+        // Re-fill user info after successful submit
+        setFormData(prev => ({
+          ...prev,
+          name: profile?.full_name || "",
+          email: user.email || "",
+        }));
+      }
     },
     onError: (error) => {
       toast.error("Failed to send message. Please try again.");
