@@ -129,9 +129,17 @@ const Header = ({ cartCount, onCartClick, categories, selectedCategory, onCatego
                     <p className="text-xs text-muted-foreground truncate">{user.email}</p>
                   </div>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => navigate('/orders')}>
+                  <DropdownMenuItem onClick={() => navigate('/account')}>
+                    <User className="h-4 w-4 mr-2" />
+                    My Account
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate('/account?tab=orders')}>
                     <Package className="h-4 w-4 mr-2" />
                     My Orders
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate('/account?tab=messages')}>
+                    <MessageSquare className="h-4 w-4 mr-2" />
+                    My Messages
                   </DropdownMenuItem>
                   {isAdmin && (
                     <>
@@ -188,12 +196,20 @@ const Header = ({ cartCount, onCartClick, categories, selectedCategory, onCatego
                     Sign In
                   </Button>
                 )}
-                {user && (
-                  <div className="flex gap-2 flex-1">
-                    <Button variant="outline" size="sm" onClick={() => navigate('/orders')} className="flex-1">
-                      <Package className="h-4 w-4 mr-2" />
-                      My Orders
-                    </Button>
+                    {user && (
+                      <div className="flex gap-2 flex-1">
+                        <Button variant="outline" size="sm" onClick={() => navigate('/account')} className="flex-1">
+                          <User className="h-4 w-4 mr-2" />
+                          Account
+                        </Button>
+                        {isAdmin && (
+                          <Button variant="outline" size="sm" onClick={() => navigate('/admin')} className="flex-1">
+                            <Shield className="h-4 w-4 mr-2" />
+                            Admin
+                          </Button>
+                        )}
+                      </div>
+                    )}
                     {isAdmin && (
                       <Button variant="outline" size="sm" onClick={() => navigate('/admin')} className="flex-1">
                         <Shield className="h-4 w-4 mr-2" />
