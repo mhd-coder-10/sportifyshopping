@@ -169,26 +169,29 @@ const AdminMessages = () => {
                         {format(new Date(message.created_at), 'MMM d, yyyy h:mm a')}
                       </TableCell>
                       <TableCell>
-                        <Select
-                          value={message.status}
-                          onValueChange={(value) => {
-                            updateMessageMutation.mutate({ id: message.id, status: value });
-                          }}
-                        >
-                          <SelectTrigger 
-                            className={`w-28 h-8 text-xs ${getStatusColor(message.status)} border-0`}
-                            onClick={(e) => e.stopPropagation()}
+                        <div onClick={(e) => e.stopPropagation()} onTouchStart={(e) => e.stopPropagation()}>
+                          <Select
+                            value={message.status}
+                            onValueChange={(value) => {
+                              updateMessageMutation.mutate({ id: message.id, status: value });
+                            }}
                           >
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {statusOptions.map((status) => (
-                              <SelectItem key={status} value={status}>
-                                {status.charAt(0).toUpperCase() + status.slice(1)}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                            <SelectTrigger 
+                              className={`w-28 h-8 text-xs ${getStatusColor(message.status)} border-0`}
+                            >
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent 
+                              onCloseAutoFocus={(e) => e.preventDefault()}
+                            >
+                              {statusOptions.map((status) => (
+                                <SelectItem key={status} value={status}>
+                                  {status.charAt(0).toUpperCase() + status.slice(1)}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex items-center justify-end gap-2">
