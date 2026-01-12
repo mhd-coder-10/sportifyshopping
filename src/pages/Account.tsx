@@ -31,6 +31,7 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { useCurrency } from "@/contexts/CurrencyContext";
+import { validatePhone } from "@/lib/validation";
 
 interface ContactMessage {
   id: string;
@@ -149,6 +150,15 @@ const Account = () => {
   }, [user, queryClient, selectedMessage]);
 
   const handleSaveProfile = async () => {
+    // Validate phone number if provided
+    if (profileForm.phone) {
+      const phoneError = validatePhone(profileForm.phone);
+      if (phoneError) {
+        toast.error(phoneError);
+        return;
+      }
+    }
+
     setIsSaving(true);
     const { error } = await updateProfile(profileForm);
     setIsSaving(false);

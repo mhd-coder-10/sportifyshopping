@@ -18,7 +18,11 @@ import { useCategories } from '@/hooks/useProducts';
 
 const addressSchema = z.object({
   fullName: z.string().min(2, 'Name is required').max(100),
-  phone: z.string().min(10, 'Valid phone number required').max(15),
+  phone: z.string()
+    .transform((val) => val.replace(/\D/g, ''))
+    .refine((val) => val.length === 10, {
+      message: 'Phone number must be exactly 10 digits',
+    }),
   address: z.string().min(5, 'Address is required').max(200),
   city: z.string().min(2, 'City is required').max(100),
   state: z.string().min(2, 'State is required').max(100),
