@@ -36,6 +36,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Loader2, Users, Edit, Trash2, Shield, Search, RefreshCw } from 'lucide-react';
 import { format } from 'date-fns';
+import { validatePhone } from '@/lib/validation';
 
 interface UserProfile {
   id: string;
@@ -227,6 +228,15 @@ const AdminUsers = () => {
 
   const handleSaveEdit = () => {
     if (!editingUser) return;
+
+    // Validate phone number if provided
+    if (editForm.phone) {
+      const phoneError = validatePhone(editForm.phone);
+      if (phoneError) {
+        toast.error(phoneError);
+        return;
+      }
+    }
 
     const updateData: {
       userId: string;
