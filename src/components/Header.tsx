@@ -196,20 +196,12 @@ const Header = ({ cartCount, onCartClick, categories, selectedCategory, onCatego
                     Sign In
                   </Button>
                 )}
-                    {user && (
-                      <div className="flex gap-2 flex-1">
-                        <Button variant="outline" size="sm" onClick={() => navigate('/account')} className="flex-1">
-                          <User className="h-4 w-4 mr-2" />
-                          Account
-                        </Button>
-                        {isAdmin && (
-                          <Button variant="outline" size="sm" onClick={() => navigate('/admin')} className="flex-1">
-                            <Shield className="h-4 w-4 mr-2" />
-                            Admin
-                          </Button>
-                        )}
-                      </div>
-                    )}
+                {user && (
+                  <div className="flex gap-2 flex-1">
+                    <Button variant="outline" size="sm" onClick={() => navigate('/account')} className="flex-1">
+                      <User className="h-4 w-4 mr-2" />
+                      Account
+                    </Button>
                     {isAdmin && (
                       <Button variant="outline" size="sm" onClick={() => navigate('/admin')} className="flex-1">
                         <Shield className="h-4 w-4 mr-2" />
