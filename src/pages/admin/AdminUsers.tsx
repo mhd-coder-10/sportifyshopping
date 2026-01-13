@@ -36,7 +36,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Loader2, Users, Edit, Trash2, Shield, Search, RefreshCw } from 'lucide-react';
 import { format } from 'date-fns';
-import { validatePhone } from '@/lib/validation';
+import { validatePhone, handlePhoneInput } from '@/lib/validation';
 
 interface UserProfile {
   id: string;
@@ -458,8 +458,12 @@ const AdminUsers = () => {
             <div className="space-y-2">
               <Label>Phone</Label>
               <Input
+                type="tel"
+                inputMode="numeric"
+                maxLength={10}
+                placeholder="10 digit number"
                 value={editForm.phone}
-                onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })}
+                onChange={(e) => setEditForm({ ...editForm, phone: handlePhoneInput(e.target.value) })}
                 className="bg-slate-900 border-slate-600"
               />
             </div>
