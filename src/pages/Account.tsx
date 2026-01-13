@@ -27,8 +27,21 @@ import {
   Eye, 
   Clock, 
   ChevronRight,
-  Save 
+  Save,
+  Pencil,
+  Trash2 
 } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { format } from "date-fns";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { validatePhone, handlePhoneInput } from "@/lib/validation";
@@ -53,6 +66,10 @@ const Account = () => {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [selectedMessage, setSelectedMessage] = useState<ContactMessage | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editForm, setEditForm] = useState({ subject: '', message: '' });
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [messageToDelete, setMessageToDelete] = useState<ContactMessage | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [profileForm, setProfileForm] = useState({
     full_name: "",
@@ -187,6 +204,57 @@ const Account = () => {
       case 'shipped':
       case 'out_for_delivery': return 'bg-blue-500';
       default: return 'bg-yellow-500';
+    }
+  };
+
+  const handleEditMessage = (message: ContactMessage) => {
+    setEditForm({ subject: message.subject || '', message: message.message });
+    setIsEditMode(true);
+  };
+
+  const handleSaveMessage = async () => {
+    if (!selectedMessage) return;
+    
+    setIsSaving(true);
+    const { error } = await supabase
+      .from('contact_messages')
+      .update({
+        subject: editForm.subject || null,
+        message: editForm.message,
+      })
+      .eq('id', selectedMessage.id);
+    
+    setIsSaving(false);
+    
+    if (error) {
+      toast.error("Failed to update message");
+    } else {
+      toast.success("Message updated successfully");
+      setIsEditMode(false);
+      queryClient.invalidateQueries({ queryKey: ['my-messages', user?.id] });
+      setSelectedMessage({ ...selectedMessage, subject: editForm.subject || null, message: editForm.message });
+    }
+  };
+
+  const handleDeleteMessage = async () => {
+    if (!messageToDelete) return;
+    
+    setIsDeleting(true);
+    const { error } = await supabase
+      .from('contact_messages')
+      .delete()
+      .eq('id', messageToDelete.id);
+    
+    setIsDeleting(false);
+    
+    if (error) {
+      toast.error("Failed to delete message");
+    } else {
+      toast.success("Message deleted successfully");
+      setMessageToDelete(null);
+      setIsDetailOpen(false);
+      setSelectedMessage(null);
+      queryClient.invalidateQueries({ queryKey: ['my-messages', user?.id] });
     }
   };
 
@@ -433,17 +501,43 @@ const Account = () => {
                               </Badge>
                             </TableCell>
                             <TableCell className="text-right">
-                              <Button 
-                                variant="ghost" 
-                                size="icon"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setSelectedMessage(message);
-                                  setIsDetailOpen(true);
-                                }}
-                              >
-                                <Eye className="h-4 w-4" />
-                              </Button>
+                              <div className="flex items-center justify-end gap-1">
+                                <Button 
+                                  variant="ghost" 
+                                  size="icon"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setSelectedMessage(message);
+                                    setIsEditMode(false);
+                                    setIsDetailOpen(true);
+                                  }}
+                                >
+                                  <Eye className="h-4 w-4" />
+                                </Button>
+                                <Button 
+                                  variant="ghost" 
+                                  size="icon"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setSelectedMessage(message);
+                                    handleEditMessage(message);
+                                    setIsDetailOpen(true);
+                                  }}
+                                >
+                                  <Pencil className="h-4 w-4" />
+                                </Button>
+                                <Button 
+                                  variant="ghost" 
+                                  size="icon"
+                                  className="text-destructive hover:text-destructive"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setMessageToDelete(message);
+                                  }}
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
                             </TableCell>
                           </TableRow>
                         ))}
@@ -464,11 +558,14 @@ const Account = () => {
       </div>
 
       {/* Message Detail Dialog */}
-      <Dialog open={isDetailOpen} onOpenChange={setIsDetailOpen}>
+      <Dialog open={isDetailOpen} onOpenChange={(open) => {
+        setIsDetailOpen(open);
+        if (!open) setIsEditMode(false);
+      }}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle className="flex items-center justify-between">
-              <span>Message Details</span>
+              <span>{isEditMode ? 'Edit Message' : 'Message Details'}</span>
               {selectedMessage && (
                 <Badge className={getMessageStatusColor(selectedMessage.status)}>
                   {selectedMessage.status.charAt(0).toUpperCase() + selectedMessage.status.slice(1)}
@@ -495,41 +592,113 @@ const Account = () => {
                 </div>
               </div>
 
-              <div>
-                <p className="text-sm text-muted-foreground mb-2">Subject</p>
-                <p className="font-medium">{selectedMessage.subject || 'No subject'}</p>
-              </div>
+              {isEditMode ? (
+                <>
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-subject">Subject</Label>
+                    <Input
+                      id="edit-subject"
+                      value={editForm.subject}
+                      onChange={(e) => setEditForm({ ...editForm, subject: e.target.value })}
+                      placeholder="Enter subject"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-message">Message</Label>
+                    <Textarea
+                      id="edit-message"
+                      value={editForm.message}
+                      onChange={(e) => setEditForm({ ...editForm, message: e.target.value })}
+                      rows={5}
+                      placeholder="Enter your message"
+                    />
+                  </div>
+                  <div className="flex gap-2">
+                    <Button onClick={handleSaveMessage} disabled={isSaving || !editForm.message.trim()}>
+                      {isSaving ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Save className="h-4 w-4 mr-2" />}
+                      Save Changes
+                    </Button>
+                    <Button variant="outline" onClick={() => setIsEditMode(false)}>
+                      Cancel
+                    </Button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div>
+                    <p className="text-sm text-muted-foreground mb-2">Subject</p>
+                    <p className="font-medium">{selectedMessage.subject || 'No subject'}</p>
+                  </div>
 
-              <div>
-                <p className="text-sm text-muted-foreground mb-2">Your Message</p>
-                <div className="bg-muted rounded-lg p-4">
-                  <p className="whitespace-pre-wrap">{selectedMessage.message}</p>
-                </div>
-              </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground mb-2">Your Message</p>
+                    <div className="bg-muted rounded-lg p-4">
+                      <p className="whitespace-pre-wrap">{selectedMessage.message}</p>
+                    </div>
+                  </div>
 
-              <div className="pt-4 border-t">
-                <p className="text-sm text-muted-foreground mb-2">Current Status</p>
-                <div className="flex items-center gap-2">
-                  <Badge className={getMessageStatusColor(selectedMessage.status)}>
-                    {selectedMessage.status.charAt(0).toUpperCase() + selectedMessage.status.slice(1)}
-                  </Badge>
-                  <span className="text-sm text-muted-foreground">
-                    {selectedMessage.status === 'unread' && '- Awaiting review'}
-                    {selectedMessage.status === 'read' && '- Being reviewed'}
-                    {selectedMessage.status === 'replied' && '- We have responded'}
-                    {selectedMessage.status === 'resolved' && '- Issue resolved'}
-                  </span>
-                </div>
-                {selectedMessage.updated_at !== selectedMessage.created_at && (
-                  <p className="text-xs text-muted-foreground mt-2">
-                    Last updated: {format(new Date(selectedMessage.updated_at), 'PPpp')}
-                  </p>
-                )}
-              </div>
+                  <div className="pt-4 border-t">
+                    <p className="text-sm text-muted-foreground mb-2">Current Status</p>
+                    <div className="flex items-center gap-2">
+                      <Badge className={getMessageStatusColor(selectedMessage.status)}>
+                        {selectedMessage.status.charAt(0).toUpperCase() + selectedMessage.status.slice(1)}
+                      </Badge>
+                      <span className="text-sm text-muted-foreground">
+                        {selectedMessage.status === 'unread' && '- Awaiting review'}
+                        {selectedMessage.status === 'read' && '- Being reviewed'}
+                        {selectedMessage.status === 'replied' && '- We have responded'}
+                        {selectedMessage.status === 'resolved' && '- Issue resolved'}
+                      </span>
+                    </div>
+                    {selectedMessage.updated_at !== selectedMessage.created_at && (
+                      <p className="text-xs text-muted-foreground mt-2">
+                        Last updated: {format(new Date(selectedMessage.updated_at), 'PPpp')}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="flex gap-2 pt-4 border-t">
+                    <Button variant="outline" onClick={() => handleEditMessage(selectedMessage)}>
+                      <Pencil className="h-4 w-4 mr-2" />
+                      Edit
+                    </Button>
+                    <Button 
+                      variant="destructive" 
+                      onClick={() => setMessageToDelete(selectedMessage)}
+                    >
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      Delete
+                    </Button>
+                  </div>
+                </>
+              )}
             </div>
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={!!messageToDelete} onOpenChange={(open) => !open && setMessageToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Message?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete your message.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleDeleteMessage} 
+              disabled={isDeleting}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {isDeleting ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : null}
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <CartDrawer
         isOpen={isCartOpen}
