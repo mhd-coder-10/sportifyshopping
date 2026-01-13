@@ -179,9 +179,9 @@ const AdminOrders = () => {
                           <SelectTrigger className={`w-28 h-8 text-xs ${getPaymentStatusColor(order.payment_status)} border-0`}>
                             <SelectValue />
                           </SelectTrigger>
-                          <SelectContent>
+                          <SelectContent className="bg-slate-800 border-slate-600 z-50">
                             {paymentStatusOptions.map((status) => (
-                              <SelectItem key={status} value={status} className="capitalize">
+                              <SelectItem key={status} value={status} className="capitalize text-white hover:bg-slate-700 focus:bg-slate-700 focus:text-white">
                                 {status.charAt(0).toUpperCase() + status.slice(1)}
                               </SelectItem>
                             ))}
@@ -198,9 +198,9 @@ const AdminOrders = () => {
                           <SelectTrigger className={`w-36 h-8 text-xs ${getStatusColor(order.status)} border-0`}>
                             <SelectValue />
                           </SelectTrigger>
-                          <SelectContent>
+                          <SelectContent className="bg-slate-800 border-slate-600 z-50">
                             {statusOptions.map((status) => (
-                              <SelectItem key={status} value={status}>
+                              <SelectItem key={status} value={status} className="text-white hover:bg-slate-700 focus:bg-slate-700 focus:text-white capitalize">
                                 {status.replace('_', ' ')}
                               </SelectItem>
                             ))}
