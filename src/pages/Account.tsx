@@ -31,7 +31,7 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { useCurrency } from "@/contexts/CurrencyContext";
-import { validatePhone } from "@/lib/validation";
+import { validatePhone, handlePhoneInput } from "@/lib/validation";
 
 interface ContactMessage {
   id: string;
@@ -271,8 +271,12 @@ const Account = () => {
                       <Label htmlFor="phone">Phone</Label>
                       <Input
                         id="phone"
+                        type="tel"
+                        inputMode="numeric"
+                        maxLength={10}
+                        placeholder="10 digit number"
                         value={profileForm.phone}
-                        onChange={(e) => setProfileForm({ ...profileForm, phone: e.target.value })}
+                        onChange={(e) => setProfileForm({ ...profileForm, phone: handlePhoneInput(e.target.value) })}
                       />
                     </div>
                     <div className="space-y-2">

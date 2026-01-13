@@ -34,3 +34,8 @@ export const validateRequiredPhone = (phone: string): string | null => {
   }
   return null;
 };
+
+// Handle phone input - only allow digits and limit to 10 characters
+export const handlePhoneInput = (value: string): string => {
+  return value.replace(/\D/g, '').slice(0, 10);
+};

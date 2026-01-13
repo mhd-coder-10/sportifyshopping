@@ -15,6 +15,7 @@ import { z } from 'zod';
 import { Loader2, CreditCard, Truck, ChevronLeft, Package } from 'lucide-react';
 import Header from '@/components/Header';
 import { useCategories } from '@/hooks/useProducts';
+import { handlePhoneInput } from '@/lib/validation';
 
 const addressSchema = z.object({
   fullName: z.string().min(2, 'Name is required').max(100),
@@ -204,8 +205,12 @@ const Checkout = () => {
                   <Label htmlFor="phone">Phone Number *</Label>
                   <Input
                     id="phone"
+                    type="tel"
+                    inputMode="numeric"
+                    maxLength={10}
+                    placeholder="10 digit number"
                     value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
+                    onChange={(e) => setPhone(handlePhoneInput(e.target.value))}
                     className={errors.phone ? 'border-destructive' : ''}
                   />
                   {errors.phone && <p className="text-sm text-destructive">{errors.phone}</p>}
