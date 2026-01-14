@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ShoppingCart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useCurrency } from "@/contexts/CurrencyContext";
+import { formatPrice } from "@/lib/formatPrice";
 
 interface ProductCardProps {
   id: string;
@@ -15,7 +15,6 @@ interface ProductCardProps {
 
 const ProductCard = ({ id, name, description, price, originalPrice, imageUrl, onAddToCart }: ProductCardProps) => {
   const navigate = useNavigate();
-  const { formatPrice } = useCurrency();
   const discount = originalPrice ? Math.round(((originalPrice - price) / originalPrice) * 100) : null;
 
   const handleClick = () => {

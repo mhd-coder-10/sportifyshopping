@@ -8,7 +8,7 @@ import ReviewSection from "@/components/ReviewSection";
 import { useCart } from "@/hooks/useCart";
 import { useCategories } from "@/hooks/useProducts";
 import { useAuth } from "@/contexts/AuthContext";
-import { useCurrency } from "@/contexts/CurrencyContext";
+import { formatPrice } from "@/lib/formatPrice";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ShoppingCart, Heart, Share2, Truck, Shield, RotateCcw, Star, Minus, Plus, ChevronLeft } from "lucide-react";
@@ -33,7 +33,6 @@ const ProductDetail = () => {
   const [isWishlisted, setIsWishlisted] = useState(false);
 
   const { user } = useAuth();
-  const { formatPrice } = useCurrency();
   const { data: categories } = useCategories();
   const { cartItems, addToCart, updateQuantity, removeFromCart, cartCount } = useCart();
 

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { useCurrency } from '@/contexts/CurrencyContext';
+import { formatPrice } from '@/lib/formatPrice';
 import { useCart } from '@/hooks/useCart';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -33,7 +33,6 @@ const addressSchema = z.object({
 const Checkout = () => {
   const navigate = useNavigate();
   const { user, profile } = useAuth();
-  const { formatPrice, currency } = useCurrency();
   const { cartItems, clearCart, cartCount } = useCart();
   const { data: categories } = useCategories();
   
@@ -98,7 +97,7 @@ const Checkout = () => {
           payment_method: paymentMethod,
           payment_status: paymentMethod === 'cash_on_delivery' ? 'pending' : 'paid',
           total_amount: total,
-          currency: currency.code,
+          currency: 'INR',
           shipping_address: address,
           shipping_city: city,
           shipping_state: state,
@@ -120,7 +119,7 @@ const Checkout = () => {
         size: (item as any).size || null,
         color: (item as any).color || null,
         price_at_purchase: item.price,
-        currency: currency.code
+        currency: 'INR'
       }));
 
       const { error: itemsError } = await supabase

@@ -43,7 +43,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { format } from "date-fns";
-import { useCurrency } from "@/contexts/CurrencyContext";
+import { formatPrice } from "@/lib/formatPrice";
 import { validatePhone, handlePhoneInput } from "@/lib/validation";
 
 interface ContactMessage {
@@ -62,7 +62,6 @@ const Account = () => {
   const [searchParams] = useSearchParams();
   const { user, profile, updateProfile } = useAuth();
   const queryClient = useQueryClient();
-  const { formatPrice } = useCurrency();
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [selectedMessage, setSelectedMessage] = useState<ContactMessage | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
