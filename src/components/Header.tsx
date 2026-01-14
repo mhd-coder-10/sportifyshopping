@@ -5,7 +5,6 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useAdminAuth } from "@/hooks/useAdminAuth";
-import CurrencySelector from "./CurrencySelector";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -93,10 +92,6 @@ const Header = ({ cartCount, onCartClick, categories, selectedCategory, onCatego
 
           {/* Actions */}
           <div className="flex items-center gap-2 md:gap-3">
-            {/* Currency Selector - Desktop */}
-            <div className="hidden md:block">
-              <CurrencySelector />
-            </div>
 
             {isSearchOpen && (
               <div className="hidden md:flex items-center gap-2 relative">
@@ -190,7 +185,6 @@ const Header = ({ cartCount, onCartClick, categories, selectedCategory, onCatego
           <nav className="md:hidden py-4 border-t border-border">
             <div className="flex flex-col gap-4">
               <div className="flex items-center gap-2">
-                <CurrencySelector />
                 {!user && (
                   <Button variant="outline" size="sm" onClick={() => navigate('/auth')} className="flex-1">
                     Sign In
