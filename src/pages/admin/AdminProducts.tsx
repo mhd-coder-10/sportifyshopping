@@ -11,7 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { toast } from 'sonner';
-import { Plus, Pencil, Trash2, Loader2 } from 'lucide-react';
+import { Plus, Pencil, Trash2, Loader2, Filter } from 'lucide-react';
 
 interface ProductForm {
   name: string;
@@ -40,14 +40,21 @@ const AdminProducts = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<ProductForm>(initialForm);
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string>('all');
 
   const { data: products, isLoading } = useQuery({
-    queryKey: ['admin-products'],
+    queryKey: ['admin-products', selectedCategoryId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from('products')
         .select('*, categories(name)')
         .order('created_at', { ascending: false });
+      
+      if (selectedCategoryId && selectedCategoryId !== 'all') {
+        query = query.eq('category_id', selectedCategoryId);
+      }
+      
+      const { data, error } = await query;
       if (error) throw error;
       return data;
     },
@@ -140,6 +147,23 @@ const AdminProducts = () => {
             <h1 className="text-3xl font-bold text-white">Products</h1>
             <p className="text-slate-400">Manage your product catalog</p>
           </div>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <Filter className="h-4 w-4 text-slate-400" />
+              <Select value={selectedCategoryId} onValueChange={setSelectedCategoryId}>
+                <SelectTrigger className="w-[200px] bg-slate-700 border-slate-600 text-white">
+                  <SelectValue placeholder="Filter by category" />
+                </SelectTrigger>
+                <SelectContent className="bg-slate-800 border-slate-700">
+                  <SelectItem value="all" className="text-white hover:bg-slate-700">All Categories</SelectItem>
+                  {categories?.map((cat) => (
+                    <SelectItem key={cat.id} value={cat.id} className="text-white hover:bg-slate-700">
+                      {cat.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           <Dialog open={isOpen} onOpenChange={(open) => {
             setIsOpen(open);
             if (!open) {
@@ -253,7 +277,8 @@ const AdminProducts = () => {
                 </div>
               </form>
             </DialogContent>
-          </Dialog>
+            </Dialog>
+          </div>
         </div>
 
         <Card className="bg-slate-800 border-slate-700">
