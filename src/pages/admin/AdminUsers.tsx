@@ -77,21 +77,12 @@ const AdminUsers = () => {
     country: '',
   });
 
-  const { data: users, isLoading, refetch } = useQuery({
+  const { data: users, isLoading, refetch, isFetching } = useQuery({
     queryKey: ['admin-users'],
     queryFn: async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) throw new Error('Not authenticated');
 
-      const response = await supabase.functions.invoke('admin-users', {
-        body: null,
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${session.access_token}`,
-        },
-      });
-
-      // Handle the function invoke response properly
       const url = new URL(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-users?action=list`);
       const res = await fetch(url.toString(), {
         method: 'GET',
@@ -302,10 +293,11 @@ const AdminUsers = () => {
           <Button
             variant="outline"
             onClick={() => refetch()}
+            disabled={isFetching}
             className="border-slate-600 text-slate-300 hover:bg-slate-700"
           >
-            <RefreshCw className="h-4 w-4 mr-2" />
-            Refresh
+            <RefreshCw className={`h-4 w-4 mr-2 ${isFetching ? 'animate-spin' : ''}`} />
+            {isFetching ? 'Refreshing...' : 'Refresh'}
           </Button>
         </div>
 
