@@ -14,13 +14,13 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ShoppingCart, Heart, Share2, Truck, Shield, RotateCcw, Star, Minus, Plus, ChevronLeft } from "lucide-react";
 import { toast } from "sonner";
 
-const sizes = ["US 6", "US 7", "US 8", "US 9", "US 10", "US 11", "US 12"];
+const sizes = ["IND 6", "IND 7", "IND 8", "IND 9", "IND 10", "IND 11", "IND 12"];
 const colors = [
-  { name: "Black", value: "#000000" },
-  { name: "White", value: "#FFFFFF" },
-  { name: "Red", value: "#EF4444" },
-  { name: "Blue", value: "#3B82F6" },
-  { name: "Green", value: "#22C55E" },
+  { name: "Black", value: "#000000", imageFilter: "brightness(0.3)" },
+  { name: "White", value: "#FFFFFF", imageFilter: "brightness(1.3) contrast(0.9)" },
+  { name: "Red", value: "#EF4444", imageFilter: "sepia(1) saturate(5) hue-rotate(-10deg)" },
+  { name: "Blue", value: "#3B82F6", imageFilter: "sepia(1) saturate(3) hue-rotate(180deg)" },
+  { name: "Green", value: "#22C55E", imageFilter: "sepia(1) saturate(3) hue-rotate(80deg)" },
 ];
 
 const ProductDetail = () => {
@@ -144,7 +144,8 @@ const ProductDetail = () => {
                 <img
                   src={product.image_url}
                   alt={product.name}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover transition-all duration-300"
+                  style={{ filter: selectedColor.imageFilter }}
                 />
               )}
               {discount && (
