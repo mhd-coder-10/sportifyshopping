@@ -179,7 +179,7 @@ const Index = () => {
             </div>
           </div>
           <div className="border-t border-background/20 mt-8 pt-8 text-center text-sm text-background/50">
-            © 2024 Sportify. All rights reserved.
+            © 2026 Sportify. All rights reserved.
           </div>
         </div>
       </footer>

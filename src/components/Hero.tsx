@@ -22,7 +22,7 @@ const Hero = () => {
           {/* Content */}
           <div className="relative z-10 text-center md:text-left">
             <span className="inline-block px-4 py-2 bg-primary/20 text-primary rounded-full text-sm font-semibold mb-6">
-              NEW COLLECTION 2024
+              NEW COLLECTION 2026
             </span>
             <h1 className="text-5xl md:text-7xl lg:text-8xl text-white leading-none mb-6 tracking-tight">
               PUSH YOUR
@@ -63,7 +63,7 @@ const Hero = () => {
             {/* Price Tag */}
             <div className="absolute top-10 right-10 bg-white rounded-2xl p-4 shadow-2xl">
               <span className="text-sm text-muted-foreground">Starting at</span>
-              <p className="text-3xl font-bold text-foreground" style={{ fontFamily: 'var(--font-display)' }}>$159.99</p>
+              <p className="text-3xl font-bold text-foreground" style={{ fontFamily: 'var(--font-display)' }}>₹4,999</p>
             </div>
           </div>
         </div>

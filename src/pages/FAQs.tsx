@@ -18,7 +18,7 @@ const faqs = [
       },
       {
         q: "Do you offer free shipping?",
-        a: "Yes! We offer free standard shipping on all orders over $100. Express shipping is available at an additional cost."
+        a: "Yes! We offer free standard shipping on all orders over ₹2,000. Express shipping is available at an additional cost."
       },
       {
         q: "Can I track my order?",
