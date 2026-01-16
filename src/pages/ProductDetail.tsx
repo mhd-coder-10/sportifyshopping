@@ -31,6 +31,18 @@ const ProductDetail = () => {
   const [selectedColor, setSelectedColor] = useState(colors[0]);
   const [quantity, setQuantity] = useState(1);
   const [isWishlisted, setIsWishlisted] = useState(false);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+
+  // Generate additional product images with different angles/views
+  const getProductImages = (baseUrl: string | null) => {
+    if (!baseUrl) return [];
+    return [
+      { url: baseUrl, label: "Front View" },
+      { url: baseUrl, label: "Side View", rotation: "rotateY(25deg)" },
+      { url: baseUrl, label: "Back View", rotation: "rotateY(180deg)" },
+      { url: baseUrl, label: "Detail View", scale: "1.2" },
+    ];
+  };
 
   const { user } = useAuth();
   const { data: categories } = useCategories();
@@ -137,33 +149,68 @@ const ProductDetail = () => {
         </Button>
 
         <div className="grid lg:grid-cols-2 gap-8 lg:gap-12">
-          {/* Product Image */}
+          {/* Product Images */}
           <div className="relative">
-            <div className="aspect-square bg-secondary rounded-3xl overflow-hidden sticky top-24">
+            <div className="sticky top-24 space-y-4">
+              {/* Main Image */}
+              <div className="aspect-square bg-secondary rounded-3xl overflow-hidden relative">
+                {product.image_url && (
+                  <img
+                    src={getProductImages(product.image_url)[selectedImageIndex]?.url || product.image_url}
+                    alt={product.name}
+                    className="w-full h-full object-cover transition-all duration-300"
+                    style={{ 
+                      filter: selectedColor.imageFilter,
+                      transform: getProductImages(product.image_url)[selectedImageIndex]?.rotation || 
+                                 (getProductImages(product.image_url)[selectedImageIndex]?.scale ? 
+                                  `scale(${getProductImages(product.image_url)[selectedImageIndex]?.scale})` : 'none'),
+                    }}
+                  />
+                )}
+                {discount && (
+                  <span className="absolute top-6 left-6 bg-primary text-primary-foreground text-sm font-bold px-4 py-2 rounded-full">
+                    -{discount}% OFF
+                  </span>
+                )}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className={`absolute top-6 right-6 bg-background/80 backdrop-blur-sm ${isWishlisted ? 'text-red-500' : ''}`}
+                  onClick={() => {
+                    setIsWishlisted(!isWishlisted);
+                    toast.success(isWishlisted ? "Removed from wishlist" : "Added to wishlist");
+                  }}
+                >
+                  <Heart className={`h-5 w-5 ${isWishlisted ? 'fill-current' : ''}`} />
+                </Button>
+              </div>
+
+              {/* Thumbnail Gallery */}
               {product.image_url && (
-                <img
-                  src={product.image_url}
-                  alt={product.name}
-                  className="w-full h-full object-cover transition-all duration-300"
-                  style={{ filter: selectedColor.imageFilter }}
-                />
+                <div className="grid grid-cols-4 gap-3">
+                  {getProductImages(product.image_url).map((image, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setSelectedImageIndex(index)}
+                      className={`aspect-square bg-secondary rounded-xl overflow-hidden border-2 transition-all ${
+                        selectedImageIndex === index 
+                          ? 'border-primary ring-2 ring-primary/20' 
+                          : 'border-transparent hover:border-primary/50'
+                      }`}
+                    >
+                      <img
+                        src={image.url}
+                        alt={`${product.name} - ${image.label}`}
+                        className="w-full h-full object-cover transition-all duration-200"
+                        style={{ 
+                          filter: selectedColor.imageFilter,
+                          transform: image.rotation || (image.scale ? `scale(${image.scale})` : 'none'),
+                        }}
+                      />
+                    </button>
+                  ))}
+                </div>
               )}
-              {discount && (
-                <span className="absolute top-6 left-6 bg-primary text-primary-foreground text-sm font-bold px-4 py-2 rounded-full">
-                  -{discount}% OFF
-                </span>
-              )}
-              <Button
-                variant="ghost"
-                size="icon"
-                className={`absolute top-6 right-6 bg-background/80 backdrop-blur-sm ${isWishlisted ? 'text-red-500' : ''}`}
-                onClick={() => {
-                  setIsWishlisted(!isWishlisted);
-                  toast.success(isWishlisted ? "Removed from wishlist" : "Added to wishlist");
-                }}
-              >
-                <Heart className={`h-5 w-5 ${isWishlisted ? 'fill-current' : ''}`} />
-              </Button>
             </div>
           </div>
 
