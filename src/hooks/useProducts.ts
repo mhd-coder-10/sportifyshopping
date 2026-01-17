@@ -52,7 +52,13 @@ export const useCategories = () => {
     queryFn: async () => {
       const { data, error } = await supabase.from("categories").select("*");
       if (error) throw error;
-      return data as Category[];
+      // Sort categories with "Other" always last
+      const categories = data as Category[];
+      return categories.sort((a, b) => {
+        if (a.slug === 'other') return 1;
+        if (b.slug === 'other') return -1;
+        return a.name.localeCompare(b.name);
+      });
     },
   });
 };
