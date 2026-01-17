@@ -253,6 +253,10 @@ const AdminProducts = () => {
       toast.error('Name and price are required');
       return;
     }
+    if (!form.category_id) {
+      toast.error('Please select a category');
+      return;
+    }
     saveMutation.mutate(form);
   };
 
