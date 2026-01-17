@@ -33,17 +33,6 @@ const ProductDetail = () => {
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
-  // Generate additional product images with different angles/views
-  const getProductImages = (baseUrl: string | null) => {
-    if (!baseUrl) return [];
-    return [
-      { url: baseUrl, label: "Front View" },
-      { url: baseUrl, label: "Side View", rotation: "rotateY(25deg)" },
-      { url: baseUrl, label: "Back View", rotation: "rotateY(180deg)" },
-      { url: baseUrl, label: "Detail View", scale: "1.2" },
-    ];
-  };
-
   const { user } = useAuth();
   const { data: categories } = useCategories();
   const { cartItems, addToCart, updateQuantity, removeFromCart, cartCount } = useCart();
@@ -61,6 +50,41 @@ const ProductDetail = () => {
     },
     enabled: !!id,
   });
+
+  // Fetch product images from database
+  const { data: productImages } = useQuery({
+    queryKey: ["product-images", id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("product_images")
+        .select("*")
+        .eq("product_id", id)
+        .order("display_order");
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!id,
+  });
+
+  // Generate product images array - use database images if available, otherwise generate views from main image
+  const getProductImages = () => {
+    if (productImages && productImages.length > 0) {
+      return productImages.map((img, index) => ({
+        url: img.image_url,
+        label: index === 0 ? "Main" : `View ${index + 1}`,
+      }));
+    }
+    // Fallback: generate views from main product image
+    if (!product?.image_url) return [];
+    return [
+      { url: product.image_url, label: "Front View" },
+      { url: product.image_url, label: "Side View", rotation: "rotateY(25deg)" },
+      { url: product.image_url, label: "Back View", rotation: "rotateY(180deg)" },
+      { url: product.image_url, label: "Detail View", scale: "1.2" },
+    ];
+  };
+
+  const images = getProductImages();
 
   const handleAddToCart = () => {
     if (!selectedSize) {
@@ -154,17 +178,25 @@ const ProductDetail = () => {
             <div className="sticky top-24 space-y-4">
               {/* Main Image */}
               <div className="aspect-square bg-secondary rounded-3xl overflow-hidden relative">
-                {product.image_url && (
+                {images.length > 0 && (
                   <img
-                    src={getProductImages(product.image_url)[selectedImageIndex]?.url || product.image_url}
+                    src={images[selectedImageIndex]?.url || product.image_url}
                     alt={product.name}
                     className="w-full h-full object-cover transition-all duration-300"
                     style={{ 
                       filter: selectedColor.imageFilter,
-                      transform: getProductImages(product.image_url)[selectedImageIndex]?.rotation || 
-                                 (getProductImages(product.image_url)[selectedImageIndex]?.scale ? 
-                                  `scale(${getProductImages(product.image_url)[selectedImageIndex]?.scale})` : 'none'),
+                      transform: (images[selectedImageIndex] as any)?.rotation || 
+                                 ((images[selectedImageIndex] as any)?.scale ? 
+                                  `scale(${(images[selectedImageIndex] as any)?.scale})` : 'none'),
                     }}
+                  />
+                )}
+                {!images.length && product.image_url && (
+                  <img
+                    src={product.image_url}
+                    alt={product.name}
+                    className="w-full h-full object-cover transition-all duration-300"
+                    style={{ filter: selectedColor.imageFilter }}
                   />
                 )}
                 {discount && (
@@ -186,9 +218,9 @@ const ProductDetail = () => {
               </div>
 
               {/* Thumbnail Gallery */}
-              {product.image_url && (
+              {images.length > 1 && (
                 <div className="grid grid-cols-4 gap-3">
-                  {getProductImages(product.image_url).map((image, index) => (
+                  {images.map((image, index) => (
                     <button
                       key={index}
                       onClick={() => setSelectedImageIndex(index)}
@@ -204,7 +236,7 @@ const ProductDetail = () => {
                         className="w-full h-full object-cover transition-all duration-200"
                         style={{ 
                           filter: selectedColor.imageFilter,
-                          transform: image.rotation || (image.scale ? `scale(${image.scale})` : 'none'),
+                          transform: (image as any).rotation || ((image as any).scale ? `scale(${(image as any).scale})` : 'none'),
                         }}
                       />
                     </button>
