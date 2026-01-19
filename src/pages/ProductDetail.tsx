@@ -16,11 +16,12 @@ import { toast } from "sonner";
 
 const sizes = ["IND 6", "IND 7", "IND 8", "IND 9", "IND 10", "IND 11", "IND 12"];
 const colors = [
-  { name: "Black", value: "#000000", imageFilter: "brightness(0.3)" },
-  { name: "White", value: "#FFFFFF", imageFilter: "brightness(1.3) contrast(0.9)" },
-  { name: "Red", value: "#EF4444", imageFilter: "sepia(1) saturate(5) hue-rotate(-10deg)" },
-  { name: "Blue", value: "#3B82F6", imageFilter: "sepia(1) saturate(3) hue-rotate(180deg)" },
-  { name: "Green", value: "#22C55E", imageFilter: "sepia(1) saturate(3) hue-rotate(80deg)" },
+  { name: "Original", value: "transparent", overlay: false },
+  { name: "Black", value: "#1a1a1a", overlay: true },
+  { name: "White", value: "#f5f5f5", overlay: true },
+  { name: "Red", value: "#EF4444", overlay: true },
+  { name: "Blue", value: "#3B82F6", overlay: true },
+  { name: "Green", value: "#22C55E", overlay: true },
 ];
 
 const ProductDetail = () => {
@@ -179,25 +180,47 @@ const ProductDetail = () => {
               {/* Main Image */}
               <div className="aspect-square bg-secondary rounded-3xl overflow-hidden relative">
                 {images.length > 0 && (
-                  <img
-                    src={images[selectedImageIndex]?.url || product.image_url}
-                    alt={product.name}
-                    className="w-full h-full object-cover transition-all duration-300"
-                    style={{ 
-                      filter: selectedColor.imageFilter,
-                      transform: (images[selectedImageIndex] as any)?.rotation || 
-                                 ((images[selectedImageIndex] as any)?.scale ? 
-                                  `scale(${(images[selectedImageIndex] as any)?.scale})` : 'none'),
-                    }}
-                  />
+                  <div className="relative w-full h-full">
+                    <img
+                      src={images[selectedImageIndex]?.url || product.image_url}
+                      alt={product.name}
+                      className="w-full h-full object-cover transition-all duration-300"
+                      style={{ 
+                        transform: (images[selectedImageIndex] as any)?.rotation || 
+                                   ((images[selectedImageIndex] as any)?.scale ? 
+                                    `scale(${(images[selectedImageIndex] as any)?.scale})` : 'none'),
+                      }}
+                    />
+                    {selectedColor.overlay && (
+                      <div 
+                        className="absolute inset-0 transition-all duration-300 pointer-events-none"
+                        style={{ 
+                          backgroundColor: selectedColor.value,
+                          mixBlendMode: 'multiply',
+                          opacity: 0.6,
+                        }}
+                      />
+                    )}
+                  </div>
                 )}
                 {!images.length && product.image_url && (
-                  <img
-                    src={product.image_url}
-                    alt={product.name}
-                    className="w-full h-full object-cover transition-all duration-300"
-                    style={{ filter: selectedColor.imageFilter }}
-                  />
+                  <div className="relative w-full h-full">
+                    <img
+                      src={product.image_url}
+                      alt={product.name}
+                      className="w-full h-full object-cover transition-all duration-300"
+                    />
+                    {selectedColor.overlay && (
+                      <div 
+                        className="absolute inset-0 transition-all duration-300 pointer-events-none"
+                        style={{ 
+                          backgroundColor: selectedColor.value,
+                          mixBlendMode: 'multiply',
+                          opacity: 0.6,
+                        }}
+                      />
+                    )}
+                  </div>
                 )}
                 {discount && (
                   <span className="absolute top-6 left-6 bg-primary text-primary-foreground text-sm font-bold px-4 py-2 rounded-full">
@@ -230,15 +253,26 @@ const ProductDetail = () => {
                           : 'border-transparent hover:border-primary/50'
                       }`}
                     >
-                      <img
-                        src={image.url}
-                        alt={`${product.name} - ${image.label}`}
-                        className="w-full h-full object-cover transition-all duration-200"
-                        style={{ 
-                          filter: selectedColor.imageFilter,
-                          transform: (image as any).rotation || ((image as any).scale ? `scale(${(image as any).scale})` : 'none'),
-                        }}
-                      />
+                      <div className="relative w-full h-full">
+                        <img
+                          src={image.url}
+                          alt={`${product.name} - ${image.label}`}
+                          className="w-full h-full object-cover transition-all duration-200"
+                          style={{ 
+                            transform: (image as any).rotation || ((image as any).scale ? `scale(${(image as any).scale})` : 'none'),
+                          }}
+                        />
+                        {selectedColor.overlay && (
+                          <div 
+                            className="absolute inset-0 pointer-events-none"
+                            style={{ 
+                              backgroundColor: selectedColor.value,
+                              mixBlendMode: 'multiply',
+                              opacity: 0.6,
+                            }}
+                          />
+                        )}
+                      </div>
                     </button>
                   ))}
                 </div>
