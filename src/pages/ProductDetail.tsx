@@ -14,7 +14,16 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ShoppingCart, Heart, Share2, Truck, Shield, RotateCcw, Star, Minus, Plus, ChevronLeft } from "lucide-react";
 import { toast } from "sonner";
 
-const sizes = ["IND 6", "IND 7", "IND 8", "IND 9", "IND 10", "IND 11", "IND 12"];
+const shoeSizes = ["6", "7", "8", "9", "10", "11", "12"];
+const clothingSizes = ["S", "M", "L", "XL", "XXL"];
+
+// Categories that typically have shoes
+const shoeCategories = ["running", "basketball", "football", "training"];
+
+const getSizesForCategory = (categorySlug: string | undefined) => {
+  if (!categorySlug) return shoeSizes;
+  return shoeCategories.includes(categorySlug.toLowerCase()) ? shoeSizes : clothingSizes;
+};
 const colors = [
   { name: "Original", value: "transparent", overlay: false },
   { name: "Black", value: "#1a1a1a", overlay: true },
@@ -43,7 +52,7 @@ const ProductDetail = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("products")
-        .select("*")
+        .select("*, categories(slug)")
         .eq("id", id)
         .single();
       if (error) throw error;
@@ -51,6 +60,10 @@ const ProductDetail = () => {
     },
     enabled: !!id,
   });
+
+  // Get category slug from joined data
+  const categorySlug = (product?.categories as { slug: string } | null)?.slug;
+  const sizes = getSizesForCategory(categorySlug);
 
   // Fetch product images from database
   const { data: productImages } = useQuery({
