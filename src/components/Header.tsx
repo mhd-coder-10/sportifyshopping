@@ -26,11 +26,13 @@ interface HeaderProps {
   onCategoryClick?: (slug: string | undefined) => void;
   searchQuery?: string;
   onSearchChange?: (query: string) => void;
+  onSearchSubmit?: () => void;
 }
 
-const Header = ({ cartCount, onCartClick, categories, selectedCategory, onCategoryClick, searchQuery, onSearchChange }: HeaderProps) => {
+const Header = ({ cartCount, onCartClick, categories, selectedCategory, onCategoryClick, searchQuery, onSearchChange, onSearchSubmit }: HeaderProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [localSearchQuery, setLocalSearchQuery] = useState('');
   const navigate = useNavigate();
   const { user, signOut, profile } = useAuth();
   const { isAdmin } = useAdminAuth();
@@ -44,15 +46,45 @@ const Header = ({ cartCount, onCartClick, categories, selectedCategory, onCatego
 
   const handleSearchToggle = () => {
     if (isSearchOpen) {
+      setLocalSearchQuery('');
       onSearchChange?.('');
     }
     setIsSearchOpen(!isSearchOpen);
+  };
+
+  const handleSearchSubmit = () => {
+    const queryToUse = onSearchChange ? searchQuery : localSearchQuery;
+    if (queryToUse?.trim()) {
+      if (onSearchSubmit) {
+        onSearchSubmit();
+      } else {
+        navigate(`/search?q=${encodeURIComponent(queryToUse.trim())}`);
+      }
+      setIsSearchOpen(false);
+      setIsMenuOpen(false);
+    }
+  };
+
+  const handleSearchKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSearchSubmit();
+    }
+  };
+
+  const handleLocalSearchChange = (value: string) => {
+    if (onSearchChange) {
+      onSearchChange(value);
+    } else {
+      setLocalSearchQuery(value);
+    }
   };
 
   const handleLogoClick = () => {
     handleCategoryClick(undefined);
     navigate('/');
   };
+
+  const currentSearchQuery = onSearchChange ? searchQuery : localSearchQuery;
 
   return (
     <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-md border-b border-border">
@@ -99,11 +131,15 @@ const Header = ({ cartCount, onCartClick, categories, selectedCategory, onCatego
                 <Input
                   type="text"
                   placeholder="Search products..."
-                  value={searchQuery || ''}
-                  onChange={(e) => onSearchChange?.(e.target.value)}
+                  value={currentSearchQuery || ''}
+                  onChange={(e) => handleLocalSearchChange(e.target.value)}
+                  onKeyDown={handleSearchKeyDown}
                   className="w-64 pl-9"
                   autoFocus
                 />
+                <Button size="sm" onClick={handleSearchSubmit} className="h-9">
+                  Search
+                </Button>
               </div>
             )}
             <Button variant="ghost" size="icon" className="hidden md:flex" onClick={handleSearchToggle}>
@@ -210,11 +246,15 @@ const Header = ({ cartCount, onCartClick, categories, selectedCategory, onCatego
                 <Input
                   type="text"
                   placeholder="Search products..."
-                  value={searchQuery || ''}
-                  onChange={(e) => onSearchChange?.(e.target.value)}
+                  value={currentSearchQuery || ''}
+                  onChange={(e) => handleLocalSearchChange(e.target.value)}
+                  onKeyDown={handleSearchKeyDown}
                   className="w-full pl-9"
                 />
               </div>
+              <Button onClick={handleSearchSubmit} className="w-full">
+                Search
+              </Button>
               {categories?.map((category) => (
                 <button
                   key={category.slug}
