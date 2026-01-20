@@ -24,21 +24,12 @@ const getSizesForCategory = (categorySlug: string | undefined) => {
   if (!categorySlug) return shoeSizes;
   return shoeCategories.includes(categorySlug.toLowerCase()) ? shoeSizes : clothingSizes;
 };
-const colors = [
-  { name: "Original", value: "transparent", overlay: false },
-  { name: "Black", value: "#1a1a1a", overlay: true },
-  { name: "White", value: "#f5f5f5", overlay: true },
-  { name: "Red", value: "#EF4444", overlay: true },
-  { name: "Blue", value: "#3B82F6", overlay: true },
-  { name: "Green", value: "#22C55E", overlay: true },
-];
 
 const ProductDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
-  const [selectedColor, setSelectedColor] = useState(colors[0]);
   const [quantity, setQuantity] = useState(1);
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
@@ -117,7 +108,7 @@ const ProductDetail = () => {
           category_id: product.category_id,
           stock_quantity: product.stock_quantity,
           is_featured: product.is_featured,
-        }, selectedSize, selectedColor.name);
+        }, selectedSize);
       }
       toast.success(`Added ${quantity} item(s) to cart`);
     }
@@ -204,16 +195,6 @@ const ProductDetail = () => {
                                     `scale(${(images[selectedImageIndex] as any)?.scale})` : 'none'),
                       }}
                     />
-                    {selectedColor.overlay && (
-                      <div 
-                        className="absolute inset-0 transition-all duration-300 pointer-events-none"
-                        style={{ 
-                          backgroundColor: selectedColor.value,
-                          mixBlendMode: 'multiply',
-                          opacity: 0.6,
-                        }}
-                      />
-                    )}
                   </div>
                 )}
                 {!images.length && product.image_url && (
@@ -223,16 +204,6 @@ const ProductDetail = () => {
                       alt={product.name}
                       className="w-full h-full object-cover transition-all duration-300"
                     />
-                    {selectedColor.overlay && (
-                      <div 
-                        className="absolute inset-0 transition-all duration-300 pointer-events-none"
-                        style={{ 
-                          backgroundColor: selectedColor.value,
-                          mixBlendMode: 'multiply',
-                          opacity: 0.6,
-                        }}
-                      />
-                    )}
                   </div>
                 )}
                 {discount && (
@@ -275,16 +246,6 @@ const ProductDetail = () => {
                             transform: (image as any).rotation || ((image as any).scale ? `scale(${(image as any).scale})` : 'none'),
                           }}
                         />
-                        {selectedColor.overlay && (
-                          <div 
-                            className="absolute inset-0 pointer-events-none"
-                            style={{ 
-                              backgroundColor: selectedColor.value,
-                              mixBlendMode: 'multiply',
-                              opacity: 0.6,
-                            }}
-                          />
-                        )}
                       </div>
                     </button>
                   ))}
@@ -331,25 +292,6 @@ const ProductDetail = () => {
               {product.description || "Premium quality sports footwear designed for maximum performance and comfort. Featuring advanced cushioning technology and breathable materials."}
             </p>
 
-            {/* Color Selection */}
-            <div>
-              <h3 className="font-semibold text-foreground mb-3">Color: {selectedColor.name}</h3>
-              <div className="flex gap-3">
-                {colors.map((color) => (
-                  <button
-                    key={color.name}
-                    onClick={() => setSelectedColor(color)}
-                    className={`w-10 h-10 rounded-full border-2 transition-all ${
-                      selectedColor.name === color.name 
-                        ? 'border-primary ring-2 ring-primary ring-offset-2' 
-                        : 'border-border hover:border-primary/50'
-                    }`}
-                    style={{ backgroundColor: color.value }}
-                    title={color.name}
-                  />
-                ))}
-              </div>
-            </div>
 
             {/* Size Selection */}
             <div>
