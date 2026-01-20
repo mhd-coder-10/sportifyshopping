@@ -18,11 +18,19 @@ const shoeSizes = ["6", "7", "8", "9", "10", "11", "12"];
 const clothingSizes = ["S", "M", "L", "XL", "XXL"];
 
 // Categories that typically have shoes
-const shoeCategories = ["running", "basketball", "football", "training"];
+const shoeCategories = ["running", "basketball", "football", "training", "cricket"];
+
+// Categories that don't require size selection (equipment, accessories, etc.)
+const noSizeCategories = ["equipment", "accessories", "bags", "balls", "bats", "other"];
 
 const getSizesForCategory = (categorySlug: string | undefined) => {
   if (!categorySlug) return shoeSizes;
   return shoeCategories.includes(categorySlug.toLowerCase()) ? shoeSizes : clothingSizes;
+};
+
+const requiresSize = (categorySlug: string | undefined) => {
+  if (!categorySlug) return true;
+  return !noSizeCategories.includes(categorySlug.toLowerCase());
 };
 
 const ProductDetail = () => {
@@ -55,6 +63,7 @@ const ProductDetail = () => {
   // Get category slug from joined data
   const categorySlug = (product?.categories as { slug: string } | null)?.slug;
   const sizes = getSizesForCategory(categorySlug);
+  const showSizeSelection = requiresSize(categorySlug);
 
   // Fetch product images from database
   const { data: productImages } = useQuery({
@@ -92,7 +101,7 @@ const ProductDetail = () => {
   const images = getProductImages();
 
   const handleAddToCart = () => {
-    if (!selectedSize) {
+    if (showSizeSelection && !selectedSize) {
       toast.error("Please select a size");
       return;
     }
@@ -108,14 +117,14 @@ const ProductDetail = () => {
           category_id: product.category_id,
           stock_quantity: product.stock_quantity,
           is_featured: product.is_featured,
-        }, selectedSize);
+        }, showSizeSelection ? selectedSize : null);
       }
       toast.success(`Added ${quantity} item(s) to cart`);
     }
   };
 
   const handleBuyNow = () => {
-    if (!selectedSize) {
+    if (showSizeSelection && !selectedSize) {
       toast.error("Please select a size");
       return;
     }
@@ -293,28 +302,30 @@ const ProductDetail = () => {
             </p>
 
 
-            {/* Size Selection */}
-            <div>
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="font-semibold text-foreground">Select Size</h3>
-                <button className="text-primary text-sm hover:underline">Size Guide</button>
+            {/* Size Selection - Only show for products that require size */}
+            {showSizeSelection && (
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="font-semibold text-foreground">Select Size</h3>
+                  <button className="text-primary text-sm hover:underline">Size Guide</button>
+                </div>
+                <div className="grid grid-cols-4 sm:grid-cols-7 gap-2">
+                  {sizes.map((size) => (
+                    <button
+                      key={size}
+                      onClick={() => setSelectedSize(size)}
+                      className={`py-3 px-2 rounded-lg border text-sm font-medium transition-all ${
+                        selectedSize === size
+                          ? 'bg-primary text-primary-foreground border-primary'
+                          : 'bg-background border-border hover:border-primary text-foreground'
+                      }`}
+                    >
+                      {size}
+                    </button>
+                  ))}
+                </div>
               </div>
-              <div className="grid grid-cols-4 sm:grid-cols-7 gap-2">
-                {sizes.map((size) => (
-                  <button
-                    key={size}
-                    onClick={() => setSelectedSize(size)}
-                    className={`py-3 px-2 rounded-lg border text-sm font-medium transition-all ${
-                      selectedSize === size
-                        ? 'bg-primary text-primary-foreground border-primary'
-                        : 'bg-background border-border hover:border-primary text-foreground'
-                    }`}
-                  >
-                    {size}
-                  </button>
-                ))}
-              </div>
-            </div>
+            )}
 
             {/* Quantity */}
             <div>
