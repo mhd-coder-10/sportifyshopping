@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Header from "@/components/Header";
-import Hero from "@/components/Hero";
+import SportsSlider from "@/components/SportsSlider";
 import CategoryCard from "@/components/CategoryCard";
 import ProductCard from "@/components/ProductCard";
 import CartDrawer from "@/components/CartDrawer";
@@ -48,7 +48,7 @@ const Index = () => {
         onSearchChange={setSearchQuery}
       />
       
-      <Hero />
+      <SportsSlider onCategoryClick={handleCategoryClick} />
 
       {/* Categories Section */}
       <section className="py-12 md:py-20">
