@@ -52,8 +52,6 @@ const CartDrawer = ({ isOpen, onClose, items, onUpdateQuantity, onRemove }: Cart
                   </div>
                   <div className="flex-1 min-w-0">
                     <h4 className="font-medium text-foreground line-clamp-1">{item.name}</h4>
-                    {item.size && <p className="text-xs text-muted-foreground">Size: {item.size}</p>}
-                    {item.color && <p className="text-xs text-muted-foreground">Color: {item.color}</p>}
                     <p className="text-lg font-bold text-foreground" style={{ fontFamily: 'var(--font-display)' }}>
                       {formatPrice(item.price)}
                     </p>
