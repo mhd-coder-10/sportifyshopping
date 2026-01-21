@@ -8,8 +8,6 @@ export interface CartItem {
   price: number;
   imageUrl: string | null;
   quantity: number;
-  size?: string;
-  color?: string;
 }
 
 const CART_STORAGE_KEY = 'sportify_cart';
@@ -25,15 +23,13 @@ export const useCart = () => {
     localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cartItems));
   }, [cartItems]);
 
-  const addToCart = (product: Product, size?: string, color?: string) => {
+  const addToCart = (product: Product) => {
     setCartItems((prev) => {
-      const existing = prev.find((item) => 
-        item.id === product.id && item.size === size && item.color === color
-      );
+      const existing = prev.find((item) => item.id === product.id);
       if (existing) {
         toast.success(`Added another ${product.name} to cart`);
         return prev.map((item) =>
-          item.id === product.id && item.size === size && item.color === color
+          item.id === product.id
             ? { ...item, quantity: item.quantity + 1 }
             : item
         );
@@ -47,8 +43,6 @@ export const useCart = () => {
           price: Number(product.price),
           imageUrl: product.image_url,
           quantity: 1,
-          size,
-          color,
         },
       ];
     });

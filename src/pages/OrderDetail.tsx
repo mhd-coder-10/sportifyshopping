@@ -242,8 +242,6 @@ const OrderDetail = () => {
                     />
                     <div className="flex-1">
                       <h3 className="font-medium">{item.products?.name}</h3>
-                      {item.size && <p className="text-sm text-muted-foreground">Size: {item.size}</p>}
-                      {item.color && <p className="text-sm text-muted-foreground">Color: {item.color}</p>}
                       <p className="text-sm text-muted-foreground">Qty: {item.quantity}</p>
                     </div>
                     <div className="text-right">

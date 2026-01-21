@@ -116,8 +116,6 @@ const Checkout = () => {
         order_id: order.id,
         product_id: item.id,
         quantity: item.quantity,
-        size: (item as any).size || null,
-        color: (item as any).color || null,
         price_at_purchase: item.price,
         currency: 'INR'
       }));

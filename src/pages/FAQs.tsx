@@ -55,16 +55,12 @@ const faqs = [
     category: "Products",
     questions: [
       {
-        q: "How do I find my shoe size?",
-        a: "Check our Size Guide for detailed measurements. We recommend measuring your foot in the evening when feet are largest. If you're between sizes, we suggest sizing up."
-      },
-      {
         q: "Are your products authentic?",
         a: "Yes! We only sell 100% authentic products sourced directly from brands or authorized distributors. Every item comes with a certificate of authenticity."
       },
       {
         q: "Do you offer product warranties?",
-        a: "All products come with manufacturer warranties. Most footwear has a 1-year warranty against manufacturing defects."
+        a: "All products come with manufacturer warranties. Most sports equipment has a 1-year warranty against manufacturing defects."
       }
     ]
   },
