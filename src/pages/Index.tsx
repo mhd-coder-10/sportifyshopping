@@ -151,7 +151,12 @@ const Index = () => {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             <div>
               <h3 className="text-xl mb-4" style={{ fontFamily: 'var(--font-display)' }}>SPORTIFY</h3>
-              <p className="text-background/70 text-sm">Premium sports gear for champions.</p>
+              <p className="text-background/70 text-sm mb-4">Premium sports gear for champions.</p>
+              <div className="text-sm text-background/70 space-y-1">
+                <p className="font-semibold text-background">Mayank bhai</p>
+                <p>mayankkhiradi89@gmail.com</p>
+                <p>+91 9327058303</p>
+              </div>
             </div>
             <div>
               <h4 className="font-semibold mb-4">SHOP</h4>
