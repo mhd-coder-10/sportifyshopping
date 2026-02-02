@@ -150,7 +150,8 @@ const Contact = () => {
             {/* Contact Info */}
             <div className="space-y-8">
               <div className="bg-card rounded-2xl p-8 shadow-lg">
-                <h2 className="text-2xl font-bold mb-6">Get in touch</h2>
+              <h2 className="text-2xl font-bold mb-2">Get in touch</h2>
+              <p className="text-muted-foreground mb-6">Owner: <span className="font-semibold text-foreground">Mayank bhai</span></p>
                 <div className="space-y-6">
                   <div className="flex items-start gap-4">
                     <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
@@ -158,8 +159,7 @@ const Contact = () => {
                     </div>
                     <div>
                       <h3 className="font-semibold">Email</h3>
-                      <p className="text-muted-foreground">support@sportify.com</p>
-                      <p className="text-muted-foreground">sales@sportify.com</p>
+                      <p className="text-muted-foreground">mayankkhiradi89@gmail.com</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-4">
@@ -168,8 +168,7 @@ const Contact = () => {
                     </div>
                     <div>
                       <h3 className="font-semibold">Phone</h3>
-                      <p className="text-muted-foreground">+1 (555) 123-4567</p>
-                      <p className="text-muted-foreground">+1 (555) 987-6543</p>
+                      <p className="text-muted-foreground">+91 9327058303</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-4">
