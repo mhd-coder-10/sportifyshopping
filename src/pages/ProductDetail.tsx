@@ -115,7 +115,7 @@ const ProductDetail = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background">
-        <Header cartCount={cartCount} onCartClick={() => setIsCartOpen(true)} categories={categories} />
+        <Header cartCount={cartCount} onCartClick={() => setIsCartOpen(true)} />
         <div className="container mx-auto px-4 py-8">
           <div className="grid md:grid-cols-2 gap-8">
             <Skeleton className="aspect-square rounded-2xl" />
@@ -133,7 +133,7 @@ const ProductDetail = () => {
   if (!product) {
     return (
       <div className="min-h-screen bg-background">
-        <Header cartCount={cartCount} onCartClick={() => setIsCartOpen(true)} categories={categories} />
+        <Header cartCount={cartCount} onCartClick={() => setIsCartOpen(true)} />
         <div className="container mx-auto px-4 py-20 text-center">
           <h1 className="text-2xl font-bold mb-4">Product not found</h1>
           <Button onClick={() => navigate("/")}>Go back home</Button>
@@ -144,7 +144,7 @@ const ProductDetail = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header cartCount={cartCount} onCartClick={() => setIsCartOpen(true)} categories={categories} />
+      <Header cartCount={cartCount} onCartClick={() => setIsCartOpen(true)} />
 
       <div className="container mx-auto px-4 py-6">
         {/* Back Button */}

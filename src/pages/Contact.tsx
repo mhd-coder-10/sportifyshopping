@@ -71,7 +71,7 @@ const Contact = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header cartCount={cartCount} onCartClick={() => setIsCartOpen(true)} categories={categories} />
+      <Header cartCount={cartCount} onCartClick={() => setIsCartOpen(true)} />
 
       <div className="container mx-auto px-4 py-12">
         <Button variant="ghost" onClick={() => navigate("/")} className="mb-6">

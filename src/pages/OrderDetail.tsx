@@ -105,7 +105,7 @@ const OrderDetail = () => {
   if (!user) {
     return (
       <div className="min-h-screen bg-background">
-        <Header cartCount={cartCount} onCartClick={() => {}} categories={categories} />
+        <Header cartCount={cartCount} onCartClick={() => {}} />
         <div className="container mx-auto px-4 py-20 text-center">
           <h1 className="text-2xl font-bold mb-4">Please login to view orders</h1>
           <Button onClick={() => navigate('/auth')}>Sign In</Button>
@@ -117,7 +117,7 @@ const OrderDetail = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background">
-        <Header cartCount={cartCount} onCartClick={() => {}} categories={categories} />
+        <Header cartCount={cartCount} onCartClick={() => {}} />
         <div className="container mx-auto px-4 py-8">
           <Skeleton className="h-8 w-48 mb-6" />
           <div className="grid gap-6">
@@ -132,7 +132,7 @@ const OrderDetail = () => {
   if (!order) {
     return (
       <div className="min-h-screen bg-background">
-        <Header cartCount={cartCount} onCartClick={() => {}} categories={categories} />
+        <Header cartCount={cartCount} onCartClick={() => {}} />
         <div className="container mx-auto px-4 py-20 text-center">
           <h1 className="text-2xl font-bold mb-4">Order not found</h1>
           <Button onClick={() => navigate('/orders')}>View All Orders</Button>
@@ -145,7 +145,7 @@ const OrderDetail = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header cartCount={cartCount} onCartClick={() => {}} categories={categories} />
+      <Header cartCount={cartCount} onCartClick={() => {}} />
       
       <div className="container mx-auto px-4 py-6">
         <Button variant="ghost" onClick={() => navigate('/orders')} className="mb-6">

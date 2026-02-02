@@ -260,7 +260,7 @@ const Account = () => {
   if (!user) {
     return (
       <div className="min-h-screen bg-background">
-        <Header cartCount={cartCount} onCartClick={() => setIsCartOpen(true)} categories={categories} />
+        <Header cartCount={cartCount} onCartClick={() => setIsCartOpen(true)} />
         <div className="container mx-auto px-4 py-12">
           <div className="text-center">
             <User className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
@@ -275,7 +275,7 @@ const Account = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header cartCount={cartCount} onCartClick={() => setIsCartOpen(true)} categories={categories} />
+      <Header cartCount={cartCount} onCartClick={() => setIsCartOpen(true)} />
 
       <div className="container mx-auto px-4 py-6">
         <Button variant="ghost" onClick={() => navigate("/")} className="mb-6">

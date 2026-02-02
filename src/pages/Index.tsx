@@ -41,9 +41,6 @@ const Index = () => {
       <Header 
         cartCount={cartCount} 
         onCartClick={() => setIsCartOpen(true)} 
-        categories={categories}
-        selectedCategory={selectedCategory}
-        onCategoryClick={setSelectedCategory}
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
       />

@@ -1,8 +1,8 @@
-import { ShoppingCart, Search, Menu, X, User, LogOut, Package, MessageSquare, ClipboardList, Shield } from "lucide-react";
+import { ShoppingCart, Search, Menu, X, User, LogOut, Package, MessageSquare, ClipboardList, Shield, Home, Phone, Info, HelpCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useAdminAuth } from "@/hooks/useAdminAuth";
 import {
@@ -13,36 +13,29 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-interface Category {
-  name: string;
-  slug: string;
-}
-
 interface HeaderProps {
   cartCount: number;
   onCartClick: () => void;
-  categories?: Category[];
-  selectedCategory?: string;
-  onCategoryClick?: (slug: string | undefined) => void;
   searchQuery?: string;
   onSearchChange?: (query: string) => void;
   onSearchSubmit?: () => void;
 }
 
-const Header = ({ cartCount, onCartClick, categories, selectedCategory, onCategoryClick, searchQuery, onSearchChange, onSearchSubmit }: HeaderProps) => {
+const Header = ({ cartCount, onCartClick, searchQuery, onSearchChange, onSearchSubmit }: HeaderProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [localSearchQuery, setLocalSearchQuery] = useState('');
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, signOut, profile } = useAuth();
   const { isAdmin } = useAdminAuth();
 
-  const handleCategoryClick = (slug: string | undefined) => {
-    // Always navigate to home page first, then apply category filter
-    navigate('/');
-    onCategoryClick?.(slug);
-    setIsMenuOpen(false);
-  };
+  const navLinks = [
+    { name: "Home", path: "/", icon: Home },
+    { name: "Contact Us", path: "/contact", icon: Phone },
+    { name: "About Us", path: "/about-us", icon: Info },
+    { name: "Support", path: "/support", icon: HelpCircle },
+  ];
 
   const handleSearchToggle = () => {
     if (isSearchOpen) {
@@ -80,8 +73,13 @@ const Header = ({ cartCount, onCartClick, categories, selectedCategory, onCatego
   };
 
   const handleLogoClick = () => {
-    handleCategoryClick(undefined);
     navigate('/');
+    setIsMenuOpen(false);
+  };
+
+  const handleNavClick = (path: string) => {
+    navigate(path);
+    setIsMenuOpen(false);
   };
 
   const currentSearchQuery = onSearchChange ? searchQuery : localSearchQuery;
@@ -106,18 +104,18 @@ const Header = ({ cartCount, onCartClick, categories, selectedCategory, onCatego
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-8">
-            {categories?.map((category) => (
+          <nav className="hidden md:flex items-center gap-6">
+            {navLinks.map((link) => (
               <button
-                key={category.slug}
-                onClick={() => handleCategoryClick(category.slug)}
+                key={link.path}
+                onClick={() => handleNavClick(link.path)}
                 className={`text-sm font-medium transition-colors ${
-                  selectedCategory === category.slug 
+                  location.pathname === link.path 
                     ? 'text-primary' 
                     : 'text-foreground hover:text-primary'
                 }`}
               >
-                {category.name.toUpperCase()}
+                {link.name}
               </button>
             ))}
           </nav>
@@ -255,17 +253,18 @@ const Header = ({ cartCount, onCartClick, categories, selectedCategory, onCatego
               <Button onClick={handleSearchSubmit} className="w-full">
                 Search
               </Button>
-              {categories?.map((category) => (
+              {navLinks.map((link) => (
                 <button
-                  key={category.slug}
-                  onClick={() => handleCategoryClick(category.slug)}
-                  className={`text-sm font-medium text-left transition-colors ${
-                    selectedCategory === category.slug 
+                  key={link.path}
+                  onClick={() => handleNavClick(link.path)}
+                  className={`text-sm font-medium text-left transition-colors flex items-center gap-2 ${
+                    location.pathname === link.path 
                       ? 'text-primary' 
                       : 'text-foreground hover:text-primary'
                   }`}
                 >
-                  {category.name.toUpperCase()}
+                  <link.icon className="h-4 w-4" />
+                  {link.name}
                 </button>
               ))}
               {user && (

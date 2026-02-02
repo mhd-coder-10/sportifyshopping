@@ -141,7 +141,7 @@ const Checkout = () => {
   if (!user) {
     return (
       <div className="min-h-screen bg-background">
-        <Header cartCount={cartCount} onCartClick={() => {}} categories={categories} />
+        <Header cartCount={cartCount} onCartClick={() => {}} />
         <div className="container mx-auto px-4 py-20 text-center">
           <h1 className="text-2xl font-bold mb-4">Please login to checkout</h1>
           <Button onClick={() => navigate('/auth')}>Sign In</Button>
@@ -153,7 +153,7 @@ const Checkout = () => {
   if (cartItems.length === 0) {
     return (
       <div className="min-h-screen bg-background">
-        <Header cartCount={cartCount} onCartClick={() => {}} categories={categories} />
+        <Header cartCount={cartCount} onCartClick={() => {}} />
         <div className="container mx-auto px-4 py-20 text-center">
           <Package className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
           <h1 className="text-2xl font-bold mb-4">Your cart is empty</h1>
@@ -165,7 +165,7 @@ const Checkout = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header cartCount={cartCount} onCartClick={() => {}} categories={categories} />
+      <Header cartCount={cartCount} onCartClick={() => {}} />
       
       <div className="container mx-auto px-4 py-6">
         <Button variant="ghost" onClick={() => navigate(-1)} className="mb-6">
