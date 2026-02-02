@@ -19,6 +19,8 @@ import OrderDetail from "./pages/OrderDetail";
 import Account from "./pages/Account";
 import NotFound from "./pages/NotFound";
 import SearchResults from "./pages/SearchResults";
+import AboutUs from "./pages/AboutUs";
+import Support from "./pages/Support";
 import AdminLogin from "./pages/admin/AdminLogin";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminProducts from "./pages/admin/AdminProducts";
@@ -51,6 +53,8 @@ const App = () => (
             <Route path="/orders" element={<Orders />} />
             <Route path="/orders/:id" element={<OrderDetail />} />
             <Route path="/account" element={<Account />} />
+            <Route path="/about-us" element={<AboutUs />} />
+            <Route path="/support" element={<Support />} />
             {/* Admin Routes */}
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route path="/admin" element={<AdminDashboard />} />

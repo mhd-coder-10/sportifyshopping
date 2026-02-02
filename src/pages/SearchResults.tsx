@@ -72,7 +72,6 @@ const SearchResults = () => {
       <Header
         cartCount={cartCount}
         onCartClick={() => setIsCartOpen(true)}
-        categories={categories}
         searchQuery={localSearchQuery}
         onSearchChange={handleSearchChange}
         onSearchSubmit={handleSearchSubmit}
