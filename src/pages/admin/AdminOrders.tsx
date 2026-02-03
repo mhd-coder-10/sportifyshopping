@@ -64,6 +64,15 @@ const AdminOrders = () => {
         .update({ status })
         .eq('id', orderId);
       if (error) throw error;
+      
+      // Send status update email
+      try {
+        await supabase.functions.invoke('send-order-email', {
+          body: { orderId, type: 'status_update', newStatus: status }
+        });
+      } catch (emailError) {
+        console.error('Failed to send status update email:', emailError);
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-orders'] });
@@ -81,6 +90,15 @@ const AdminOrders = () => {
         .update({ payment_status: paymentStatus })
         .eq('id', orderId);
       if (error) throw error;
+      
+      // Send payment status update email
+      try {
+        await supabase.functions.invoke('send-order-email', {
+          body: { orderId, type: 'payment_update', newPaymentStatus: paymentStatus }
+        });
+      } catch (emailError) {
+        console.error('Failed to send payment status email:', emailError);
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-orders'] });
