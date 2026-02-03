@@ -154,6 +154,11 @@ const Index = () => {
                 <p>mayankkhiradi89@gmail.com</p>
                 <p>+91 9327058303</p>
               </div>
+              <div className="text-sm text-background/70 mt-4 space-y-0.5">
+                <p>F-99, Samarth Complex,</p>
+                <p>Tavadiya Circle, Sidhpur,</p>
+                <p>Patan, Gujarat – 384151, India</p>
+              </div>
             </div>
             <div>
               <h4 className="font-semibold mb-4">SHOP</h4>
