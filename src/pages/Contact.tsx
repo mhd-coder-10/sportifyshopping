@@ -177,8 +177,9 @@ const Contact = () => {
                     </div>
                     <div>
                       <h3 className="font-semibold">Address</h3>
-                      <p className="text-muted-foreground">123 Sports Avenue</p>
-                      <p className="text-muted-foreground">New York, NY 10001</p>
+                      <p className="text-muted-foreground">F-99, Samarth Complex,</p>
+                      <p className="text-muted-foreground">Tavadiya Circle, Sidhpur,</p>
+                      <p className="text-muted-foreground">Patan, Gujarat – 384151, India</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-4">
