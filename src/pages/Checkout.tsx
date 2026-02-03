@@ -126,6 +126,16 @@ const Checkout = () => {
 
       if (itemsError) throw itemsError;
 
+      // Send order confirmation email
+      try {
+        await supabase.functions.invoke('send-order-email', {
+          body: { orderId: order.id, type: 'confirmation' }
+        });
+      } catch (emailError) {
+        console.error('Failed to send confirmation email:', emailError);
+        // Don't fail the order if email fails
+      }
+
       // Clear cart
       clearCart();
 
