@@ -27,13 +27,13 @@ const Support = () => {
     {
       icon: Phone,
       title: "Call Us",
-      description: "+91 9327058303",
+      description: "+91 9409533674",
       action: "Mon-Sat, 9 AM - 8 PM",
     },
     {
       icon: Mail,
       title: "Email Support",
-      description: "mayankkhiradi89@gmail.com",
+      description: "rajputdipeshkumar9@gmail.com",
       action: "Response within 24 hours",
     },
   ];

@@ -150,9 +150,9 @@ const Index = () => {
               <h3 className="text-xl mb-4" style={{ fontFamily: 'var(--font-display)' }}>SPORTIFY</h3>
               <p className="text-background/70 text-sm mb-4">Premium sports gear for champions.</p>
               <div className="text-sm text-background/70 space-y-1">
-                <p className="font-semibold text-background">Mayank bhai</p>
-                <p>mayankkhiradi89@gmail.com</p>
-                <p>+91 9327058303</p>
+                <p className="font-semibold text-background">Rajput Dipesh bhai</p>
+                <p>rajputdipeshkumar9@gmail.com</p>
+                <p>+91 9409533674</p>
               </div>
               <div className="text-sm text-background/70 mt-4 space-y-0.5">
                 <p>F-99, Samarth Complex,</p>
