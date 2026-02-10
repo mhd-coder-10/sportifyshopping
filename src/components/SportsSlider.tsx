@@ -15,15 +15,6 @@ interface SlideData {
 
 const slides: SlideData[] = [
   {
-    id: "1",
-    title: "CRICKET SEASON",
-    subtitle: "Premium Equipment",
-    description: "Dominate the pitch with professional-grade cricket bats, balls, and gear",
-    image: "https://images.unsplash.com/photo-1531415074968-036ba1b575da?w=1920&q=80",
-    color: "from-green-900/80 to-green-600/60",
-    category: "cricket"
-  },
-  {
     id: "2",
     title: "BASKETBALL",
     subtitle: "Court Ready Gear",
