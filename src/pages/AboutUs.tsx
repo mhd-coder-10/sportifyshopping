@@ -42,19 +42,19 @@ const AboutUs = () => {
             <div className="flex flex-col md:flex-row items-center gap-8">
               <div className="w-32 h-32 bg-gradient-accent rounded-full flex items-center justify-center">
                 <span className="text-4xl font-bold text-primary-foreground" style={{ fontFamily: 'var(--font-display)' }}>
-                  M
+                  R
                 </span>
               </div>
               <div className="text-center md:text-left">
-                <h2 className="text-2xl font-bold mb-2">Mayank bhai</h2>
+                <h2 className="text-2xl font-bold mb-2">Rajput Dipesh bhai</h2>
                 <p className="text-primary font-medium mb-4">Founder & Owner</p>
                 <p className="text-muted-foreground mb-4">
                   With a passion for sports and a vision to provide quality equipment to athletes of all levels, 
-                  Mayank bhai founded SPORTIFY to make premium sports gear accessible to everyone.
+                  Rajput Dipesh bhai founded SPORTIFY to make premium sports gear accessible to everyone.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 text-sm text-muted-foreground">
-                  <span>📧 mayankkhiradi89@gmail.com</span>
-                  <span>📱 +91 9327058303</span>
+                  <span>📧 rajputdipeshkumar9@gmail.com</span>
+                  <span>📱 +91 9409533674</span>
                 </div>
               </div>
             </div>
