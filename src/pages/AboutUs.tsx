@@ -35,30 +35,55 @@ const AboutUs = () => {
         </div>
       </section>
 
-      {/* Owner Section */}
       <section className="py-16">
         <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto bg-card rounded-2xl p-8 shadow-lg">
-            <div className="flex flex-col md:flex-row items-center gap-8">
-              <div className="w-32 h-32 bg-gradient-accent rounded-full flex items-center justify-center">
-                <span className="text-4xl font-bold text-primary-foreground" style={{ fontFamily: 'var(--font-display)' }}>
-                  R
-                </span>
+          <h2 className="text-3xl font-bold text-center mb-12" style={{ fontFamily: 'var(--font-display)' }}>
+            Meet the Owners
+          </h2>
+          <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+            {/* Owner 1 */}
+            <div className="bg-card rounded-2xl p-8 shadow-lg">
+              <div className="flex flex-col items-center gap-6">
+                <div className="w-24 h-24 bg-gradient-accent rounded-full flex items-center justify-center">
+                  <span className="text-3xl font-bold text-primary-foreground" style={{ fontFamily: 'var(--font-display)' }}>
+                    R
+                  </span>
+                </div>
+                <div className="text-center">
+                  <h3 className="text-xl font-bold mb-1">Rajput Dipesh bhai</h3>
+                  <p className="text-primary font-medium mb-3">Co-Founder & Owner</p>
+                  <div className="flex flex-col gap-2 text-sm text-muted-foreground">
+                    <span>📧 rajputdipeshkumar9@gmail.com</span>
+                    <span>📱 +91 9409533674</span>
+                  </div>
+                </div>
               </div>
-              <div className="text-center md:text-left">
-                <h2 className="text-2xl font-bold mb-2">Rajput Dipesh bhai</h2>
-                <p className="text-primary font-medium mb-4">Founder & Owner</p>
-                <p className="text-muted-foreground mb-4">
-                  With a passion for sports and a vision to provide quality equipment to athletes of all levels, 
-                  Rajput Dipesh bhai founded SPORTIFY to make premium sports gear accessible to everyone.
-                </p>
-                <div className="flex flex-col sm:flex-row gap-4 text-sm text-muted-foreground">
-                  <span>📧 rajputdipeshkumar9@gmail.com</span>
-                  <span>📱 +91 9409533674</span>
+            </div>
+
+            {/* Owner 2 */}
+            <div className="bg-card rounded-2xl p-8 shadow-lg">
+              <div className="flex flex-col items-center gap-6">
+                <div className="w-24 h-24 bg-gradient-accent rounded-full flex items-center justify-center">
+                  <span className="text-3xl font-bold text-primary-foreground" style={{ fontFamily: 'var(--font-display)' }}>
+                    M
+                  </span>
+                </div>
+                <div className="text-center">
+                  <h3 className="text-xl font-bold mb-1">Khiradi Mayank bhai</h3>
+                  <p className="text-primary font-medium mb-3">Co-Founder & Owner</p>
+                  <div className="flex flex-col gap-2 text-sm text-muted-foreground">
+                    <span>📧 mayankkhiradi89@gmail.com</span>
+                    <span>📱 +91 9327058303</span>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
+
+          <p className="text-muted-foreground text-center mt-8 max-w-2xl mx-auto">
+            With a shared passion for sports and a vision to provide quality equipment to athletes of all levels, 
+            they founded SPORTIFY to make premium sports gear accessible to everyone.
+          </p>
         </div>
       </section>
 
