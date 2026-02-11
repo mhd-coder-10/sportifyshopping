@@ -32,7 +32,7 @@ const Index = () => {
   const handleAddToCart = (productId: string) => {
     const product = products?.find((p) => p.id === productId);
     if (product) {
-      addToCart(product);
+      addToCart(product, 'M');
     }
   };
 

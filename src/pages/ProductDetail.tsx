@@ -6,13 +6,15 @@ import Header from "@/components/Header";
 import CartDrawer from "@/components/CartDrawer";
 import ReviewSection from "@/components/ReviewSection";
 import { useCart } from "@/hooks/useCart";
-import { useCategories } from "@/hooks/useProducts";
 import { useAuth } from "@/contexts/AuthContext";
 import { formatPrice } from "@/lib/formatPrice";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ShoppingCart, Heart, Share2, Truck, Shield, RotateCcw, Star, Minus, Plus, ChevronLeft } from "lucide-react";
 import { toast } from "sonner";
+
+const SIZES = ['S', 'M', 'L'] as const;
+const SIZE_LABELS: Record<string, string> = { S: 'Small', M: 'Medium', L: 'Large' };
 
 const ProductDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -21,9 +23,9 @@ const ProductDetail = () => {
   const [quantity, setQuantity] = useState(1);
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [selectedSize, setSelectedSize] = useState<string>('M');
 
   const { user } = useAuth();
-  const { data: categories } = useCategories();
   const { cartItems, addToCart, updateQuantity, removeFromCart, cartCount } = useCart();
 
   const { data: product, isLoading } = useQuery({
@@ -40,7 +42,21 @@ const ProductDetail = () => {
     enabled: !!id,
   });
 
-  // Fetch product images from database
+  // Fetch product sizes
+  const { data: productSizes } = useQuery({
+    queryKey: ["product-sizes", id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("product_sizes")
+        .select("*")
+        .eq("product_id", id!)
+        .order("size");
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!id,
+  });
+
   const { data: productImages } = useQuery({
     queryKey: ["product-images", id],
     queryFn: async () => {
@@ -55,7 +71,6 @@ const ProductDetail = () => {
     enabled: !!id,
   });
 
-  // Generate product images array - use database images if available, otherwise generate views from main image
   const getProductImages = () => {
     if (productImages && productImages.length > 0) {
       return productImages.map((img, index) => ({
@@ -63,7 +78,6 @@ const ProductDetail = () => {
         label: index === 0 ? "Main" : `View ${index + 1}`,
       }));
     }
-    // Fallback: generate views from main product image
     if (!product?.image_url) return [];
     return [
       { url: product.image_url, label: "Front View" },
@@ -75,41 +89,39 @@ const ProductDetail = () => {
 
   const images = getProductImages();
 
+  // Get current size data
+  const currentSizeData = productSizes?.find(s => s.size === selectedSize);
+  const currentPrice = currentSizeData ? Number(currentSizeData.price) : (product ? Number(product.price) : 0);
+  const currentOriginalPrice = currentSizeData?.original_price ? Number(currentSizeData.original_price) : (product?.original_price ? Number(product.original_price) : null);
+  const currentStock = currentSizeData ? currentSizeData.stock_quantity : (product?.stock_quantity || 0);
+
   const handleAddToCart = () => {
     if (product) {
       for (let i = 0; i < quantity; i++) {
         addToCart({
           id: product.id,
           name: product.name,
-          price: Number(product.price),
+          price: currentPrice,
           image_url: product.image_url,
-          description: product.description,
-          original_price: product.original_price ? Number(product.original_price) : null,
-          category_id: product.category_id,
-          stock_quantity: product.stock_quantity,
-          is_featured: product.is_featured,
-        });
+        }, selectedSize);
       }
-      toast.success(`Added ${quantity} item(s) to cart`);
+      toast.success(`Added ${quantity} item(s) to cart (${SIZE_LABELS[selectedSize]})`);
     }
   };
 
   const handleBuyNow = () => {
-    
     if (!user) {
       toast.error("Please login to proceed with purchase");
       navigate('/auth');
       return;
     }
-
-    // Add to cart first, then navigate to checkout
     handleAddToCart();
     toast.success("Product added to cart. Proceeding to checkout...");
     setTimeout(() => navigate('/checkout'), 500);
   };
 
-  const discount = product?.original_price 
-    ? Math.round(((Number(product.original_price) - Number(product.price)) / Number(product.original_price)) * 100) 
+  const discount = currentOriginalPrice
+    ? Math.round(((currentOriginalPrice - currentPrice) / currentOriginalPrice) * 100) 
     : null;
 
   if (isLoading) {
@@ -147,7 +159,6 @@ const ProductDetail = () => {
       <Header cartCount={cartCount} onCartClick={() => setIsCartOpen(true)} />
 
       <div className="container mx-auto px-4 py-6">
-        {/* Back Button */}
         <Button variant="ghost" onClick={() => navigate(-1)} className="mb-6">
           <ChevronLeft className="h-4 w-4 mr-2" />
           Back
@@ -157,7 +168,6 @@ const ProductDetail = () => {
           {/* Product Images */}
           <div className="relative">
             <div className="sticky top-24 space-y-4">
-              {/* Main Image */}
               <div className="aspect-square bg-secondary rounded-3xl overflow-hidden relative">
                 {images.length > 0 && (
                   <div className="relative w-full h-full">
@@ -200,7 +210,6 @@ const ProductDetail = () => {
                 </Button>
               </div>
 
-              {/* Thumbnail Gallery */}
               {images.length > 1 && (
                 <div className="grid grid-cols-4 gap-3">
                   {images.map((image, index) => (
@@ -232,7 +241,6 @@ const ProductDetail = () => {
 
           {/* Product Info */}
           <div className="space-y-6">
-            {/* Title & Rating */}
             <div>
               <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-3" style={{ fontFamily: 'var(--font-display)' }}>
                 {product.name}
@@ -244,31 +252,72 @@ const ProductDetail = () => {
                   ))}
                 </div>
                 <span className="text-muted-foreground">(128 reviews)</span>
-                <span className="text-green-600 font-medium">In Stock</span>
+                <span className={`font-medium ${currentStock > 0 ? 'text-green-600' : 'text-red-500'}`}>
+                  {currentStock > 0 ? 'In Stock' : 'Out of Stock'}
+                </span>
               </div>
             </div>
 
             {/* Price */}
             <div className="flex items-baseline gap-3">
               <span className="text-4xl font-bold text-foreground" style={{ fontFamily: 'var(--font-display)' }}>
-                {formatPrice(Number(product.price))}
+                {formatPrice(currentPrice)}
               </span>
-              {product.original_price && (
+              {currentOriginalPrice && (
                 <>
                   <span className="text-xl text-muted-foreground line-through">
-                    {formatPrice(Number(product.original_price))}
+                    {formatPrice(currentOriginalPrice)}
                   </span>
-                  <span className="text-green-600 font-semibold">Save {formatPrice(Number(product.original_price) - Number(product.price))}</span>
+                  <span className="text-green-600 font-semibold">Save {formatPrice(currentOriginalPrice - currentPrice)}</span>
                 </>
               )}
             </div>
 
+            {/* Size Selector */}
+            {productSizes && productSizes.length > 0 && (
+              <div>
+                <h3 className="font-semibold text-foreground mb-3">Select Size</h3>
+                <div className="grid grid-cols-3 gap-3">
+                  {SIZES.map((size) => {
+                    const sizeData = productSizes.find(s => s.size === size);
+                    if (!sizeData) return null;
+                    const isSelected = selectedSize === size;
+                    const isOutOfStock = sizeData.stock_quantity === 0;
+                    return (
+                      <button
+                        key={size}
+                        onClick={() => !isOutOfStock && setSelectedSize(size)}
+                        disabled={isOutOfStock}
+                        className={`relative p-4 rounded-xl border-2 transition-all text-left ${
+                          isSelected 
+                            ? 'border-primary bg-primary/5 ring-2 ring-primary/20' 
+                            : isOutOfStock
+                            ? 'border-border opacity-50 cursor-not-allowed'
+                            : 'border-border hover:border-primary/50 cursor-pointer'
+                        }`}
+                      >
+                        <div className="font-bold text-lg">{SIZE_LABELS[size]}</div>
+                        <div className="text-sm font-semibold text-foreground">{formatPrice(Number(sizeData.price))}</div>
+                        {sizeData.original_price && (
+                          <div className="text-xs text-muted-foreground line-through">{formatPrice(Number(sizeData.original_price))}</div>
+                        )}
+                        {isOutOfStock && (
+                          <span className="absolute top-2 right-2 text-[10px] bg-destructive/10 text-destructive px-1.5 py-0.5 rounded">
+                            Sold Out
+                          </span>
+                        )}
+                        <div className="text-[11px] text-muted-foreground mt-1">{sizeData.stock_quantity} left</div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
             {/* Description */}
             <p className="text-muted-foreground text-lg leading-relaxed">
-              {product.description || "Premium quality sports footwear designed for maximum performance and comfort. Featuring advanced cushioning technology and breathable materials."}
+              {product.description || "Premium quality sports equipment designed for maximum performance and comfort."}
             </p>
-
-
 
             {/* Quantity */}
             <div>
@@ -288,13 +337,13 @@ const ProductDetail = () => {
                     variant="ghost"
                     size="icon"
                     onClick={() => setQuantity(quantity + 1)}
-                    disabled={quantity >= product.stock_quantity}
+                    disabled={quantity >= currentStock}
                   >
                     <Plus className="h-4 w-4" />
                   </Button>
                 </div>
                 <span className="text-muted-foreground text-sm">
-                  {product.stock_quantity} items available
+                  {currentStock} items available
                 </span>
               </div>
             </div>
@@ -306,6 +355,7 @@ const ProductDetail = () => {
                 variant="outline"
                 className="flex-1 h-14 text-lg"
                 onClick={handleAddToCart}
+                disabled={currentStock === 0}
               >
                 <ShoppingCart className="h-5 w-5 mr-2" />
                 Add to Cart
@@ -314,12 +364,12 @@ const ProductDetail = () => {
                 size="lg"
                 className="flex-1 h-14 text-lg bg-gradient-accent border-0 hover:opacity-90"
                 onClick={handleBuyNow}
+                disabled={currentStock === 0}
               >
                 Buy Now
               </Button>
             </div>
 
-            {/* Share */}
             <Button variant="ghost" className="text-muted-foreground">
               <Share2 className="h-4 w-4 mr-2" />
               Share this product
@@ -352,7 +402,6 @@ const ProductDetail = () => {
           </div>
         </div>
 
-        {/* Reviews Section */}
         <ReviewSection productId={product.id} />
       </div>
 
