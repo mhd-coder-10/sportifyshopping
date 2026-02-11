@@ -63,7 +63,7 @@ const SearchResults = () => {
   const handleAddToCart = (productId: string) => {
     const product = searchResults?.find((p) => p.id === productId);
     if (product) {
-      addToCart(product);
+      addToCart(product, 'M');
     }
   };
 

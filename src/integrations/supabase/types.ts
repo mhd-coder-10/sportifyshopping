@@ -217,6 +217,44 @@ export type Database = {
           },
         ]
       }
+      product_sizes: {
+        Row: {
+          created_at: string
+          id: string
+          original_price: number | null
+          price: number
+          product_id: string
+          size: string
+          stock_quantity: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          original_price?: number | null
+          price: number
+          product_id: string
+          size: string
+          stock_quantity?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          original_price?: number | null
+          price?: number
+          product_id?: string
+          size?: string
+          stock_quantity?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_sizes_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       products: {
         Row: {
           category_id: string | null

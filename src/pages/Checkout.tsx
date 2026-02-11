@@ -117,7 +117,8 @@ const Checkout = () => {
         product_id: item.id,
         quantity: item.quantity,
         price_at_purchase: item.price,
-        currency: 'INR'
+        currency: 'INR',
+        size: item.size || null,
       }));
 
       const { error: itemsError } = await supabase
@@ -317,7 +318,9 @@ const Checkout = () => {
                       />
                       <div className="flex-1">
                         <p className="font-medium text-sm line-clamp-1">{item.name}</p>
-                        <p className="text-sm text-muted-foreground">Qty: {item.quantity}</p>
+                        <p className="text-sm text-muted-foreground">
+                          Size: {item.size || 'M'} · Qty: {item.quantity}
+                        </p>
                         <p className="font-semibold text-sm">{formatPrice(item.price * item.quantity)}</p>
                       </div>
                     </div>

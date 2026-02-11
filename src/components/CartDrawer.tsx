@@ -9,8 +9,8 @@ interface CartDrawerProps {
   isOpen: boolean;
   onClose: () => void;
   items: CartItem[];
-  onUpdateQuantity: (id: string, quantity: number) => void;
-  onRemove: (id: string) => void;
+  onUpdateQuantity: (id: string, quantity: number, size?: string) => void;
+  onRemove: (id: string, size?: string) => void;
 }
 
 const CartDrawer = ({ isOpen, onClose, items, onUpdateQuantity, onRemove }: CartDrawerProps) => {
@@ -44,7 +44,7 @@ const CartDrawer = ({ isOpen, onClose, items, onUpdateQuantity, onRemove }: Cart
           <>
             <div className="flex-1 overflow-auto py-4 space-y-4">
               {items.map((item, index) => (
-                <div key={`${item.id}-${index}`} className="flex gap-4 bg-secondary/50 rounded-xl p-3">
+                <div key={`${item.id}-${item.size}-${index}`} className="flex gap-4 bg-secondary/50 rounded-xl p-3">
                   <div className="w-20 h-20 rounded-lg overflow-hidden bg-secondary flex-shrink-0">
                     {item.imageUrl && (
                       <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
@@ -52,6 +52,11 @@ const CartDrawer = ({ isOpen, onClose, items, onUpdateQuantity, onRemove }: Cart
                   </div>
                   <div className="flex-1 min-w-0">
                     <h4 className="font-medium text-foreground line-clamp-1">{item.name}</h4>
+                    {item.size && (
+                      <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">
+                        Size: {item.size}
+                      </span>
+                    )}
                     <p className="text-lg font-bold text-foreground" style={{ fontFamily: 'var(--font-display)' }}>
                       {formatPrice(item.price)}
                     </p>
@@ -60,7 +65,7 @@ const CartDrawer = ({ isOpen, onClose, items, onUpdateQuantity, onRemove }: Cart
                         variant="outline"
                         size="icon"
                         className="h-7 w-7"
-                        onClick={() => onUpdateQuantity(item.id, item.quantity - 1)}
+                        onClick={() => onUpdateQuantity(item.id, item.quantity - 1, item.size)}
                       >
                         <Minus className="h-3 w-3" />
                       </Button>
@@ -69,7 +74,7 @@ const CartDrawer = ({ isOpen, onClose, items, onUpdateQuantity, onRemove }: Cart
                         variant="outline"
                         size="icon"
                         className="h-7 w-7"
-                        onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
+                        onClick={() => onUpdateQuantity(item.id, item.quantity + 1, item.size)}
                       >
                         <Plus className="h-3 w-3" />
                       </Button>
@@ -77,7 +82,7 @@ const CartDrawer = ({ isOpen, onClose, items, onUpdateQuantity, onRemove }: Cart
                         variant="ghost"
                         size="icon"
                         className="h-7 w-7 ml-auto text-destructive hover:text-destructive"
-                        onClick={() => onRemove(item.id)}
+                        onClick={() => onRemove(item.id, item.size)}
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>

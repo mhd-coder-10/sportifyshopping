@@ -35,10 +35,11 @@ const NewArrivals = () => {
     const product = products?.find((p) => p.id === productId);
     if (product) {
       addToCart({
-        ...product,
+        id: product.id,
+        name: product.name,
         price: Number(product.price),
-        original_price: product.original_price ? Number(product.original_price) : null,
-      });
+        image_url: product.image_url,
+      }, 'M');
     }
   };
 
