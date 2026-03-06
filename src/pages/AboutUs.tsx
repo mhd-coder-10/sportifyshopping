@@ -50,10 +50,10 @@ const AboutUs = () => {
                   </span>
                 </div>
                 <div className="text-center">
-                  <h3 className="text-xl font-bold mb-1">Raut Dipesh Bhai</h3>
+                  <h3 className="text-xl font-bold mb-1">Rout Dipesh Bhai</h3>
                   <p className="text-primary font-medium mb-3">Co-Founder & Owner</p>
                   <div className="flex flex-col gap-2 text-sm text-muted-foreground">
-                    <span>📧 rajputdipeshkumar9@gmail.com</span>
+                    <span>📧 routdipeshkumar9@gmail.com</span>
                     <span>📱 +91 9409533674</span>
                   </div>
                 </div>

@@ -33,7 +33,7 @@ const Support = () => {
     {
       icon: Mail,
       title: "Email Support",
-      description: "rajputdipeshkumar9@gmail.com",
+      description: "routdipeshkumar9@gmail.com",
       action: "Response within 24 hours",
     },
   ];
